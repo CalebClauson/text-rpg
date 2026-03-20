@@ -1,6 +1,6 @@
 # Text RPG (Python + Tkinter)
 
-##WIP - Currently not fully functional
+## WIP - Currently not fully functional
 
 ## Overview
 
