@@ -16,8 +16,8 @@ class Enemy:
     def take_damage(self, player):
         self.hp -= player.attack
 
-    def attack_player(self, player):
-        player.hp -= self.attack
+    def attack_player(self, player, log):
+        player.take_damage(self.attack, self, log)
 
     def drop_loot(self):
         return self.loot

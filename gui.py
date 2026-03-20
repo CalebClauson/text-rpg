@@ -1,7 +1,7 @@
 import tkinter as tk
-from combat import combat_encounter
+from combat import *
 
-def start_gui(player, enemy, combat):
+def start_gui(player, enemy):
     current_enemy = None
     in_combat = False
 
@@ -31,10 +31,10 @@ def start_gui(player, enemy, combat):
             widget.destroy()
 
         if in_combat:
-            btn1 = tk.Button(bottom_frame, text="Attack!", command=lambda: player.attack_enemy(current_enemy, log))
-            btn2 = tk.Button(bottom_frame, text="Heal!", command=lambda: player.use_item("potion", log))
+            btn1 = tk.Button(bottom_frame, text="Attack!", command=on_attack)
+            btn2 = tk.Button(bottom_frame, text="Heal!", command=on_heal)
             btn3 = tk.Button(bottom_frame, text="Backpack!", command=lambda: player.backpack(log))
-            btn4 = tk.Button(bottom_frame, text="Run!", command= handle_run)
+            btn4 = tk.Button(bottom_frame, text="Run!", command=on_run)
 
             btn1.grid(row=0, column=0)
             btn2.grid(row=0, column=1)
@@ -59,16 +59,24 @@ def start_gui(player, enemy, combat):
         in_combat = False
         current_enemy = None
         render_buttons()
+    
+    def on_attack():
+        result = handle_attack(player, current_enemy, log)
 
-    def handle_run():
-        nonlocal in_combat, current_enemy
+        if result in ["enemy_dead", "player_dead"]:
+            end_combat()
 
-        success = player.run(current_enemy, combat, log)
+    def on_heal():
+        result = handle_heal(player, current_enemy, log)
 
-        if success:
-            in_combat = False
-            current_enemy = None
-            render_buttons()
+        if result in ["enemy_dead", "player_dead"]:
+            end_combat()
+
+    def on_run():
+        result = handle_run(player, current_enemy, log)
+
+        if result in ["escaped", "player_dead"]:
+            end_combat()
         
 
     render_buttons()

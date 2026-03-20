@@ -4,6 +4,7 @@ import random
 
 WIDTH = 10
 
+
 def generate_enemy():
     with open("assets/enemies.json", "r") as f:
         enemies_data = json.load(f)
@@ -18,24 +19,56 @@ def generate_enemy():
     )
 
 
-def combat(player, enemy):
-    turn = 0
-
-    while player.is_alive() and enemy.is_alive():
-        if turn % 2 == 0:
-            turn += 1
-        else:
-            enemy.attack_player(player)
-            turn += 1
-
-    if player.is_alive():
-        print(f"{enemy.name} has been defeated!")
-    else:
-        print(f"{player.name} has fallen...")
-
 def combat_encounter(log):
     enemy = generate_enemy()
     log(f"A {enemy.name} appears!")
-    log(f"-" * WIDTH)
+    log("-" * WIDTH)
     log(f"{enemy.name} {enemy.hp}/{enemy.max_hp}")
     return enemy
+
+
+def handle_attack(player, enemy, log):
+    player.attack_enemy(enemy, log)
+
+    if not enemy.is_alive():
+        log(f"{enemy.name} has been defeated!")
+        return "enemy_dead"
+
+    enemy.attack_player(player, log)
+
+    if not player.is_alive():
+        log(f"{player.name} has fallen...")
+        return "player_dead"
+
+    return "continue"
+
+
+def handle_heal(player, enemy, log):
+    player.use_item("potion", log)
+
+    if not enemy.is_alive():
+        log(f"{enemy.name} has been defeated!")
+        return "enemy_dead"
+
+    enemy.attack_player(player, log)
+
+    if not player.is_alive():
+        log(f"{player.name} has fallen...")
+        return "player_dead"
+
+    return "continue"
+
+
+def handle_run(player, enemy,log):
+    success = player.run(enemy, log)
+
+    if success:
+        return "escaped"
+
+    enemy.attack_player(player, log)
+
+    if not player.is_alive():
+        log(f"{player.name} has fallen...")
+        return "player_dead"
+
+    return "continue"

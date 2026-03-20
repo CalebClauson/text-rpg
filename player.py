@@ -45,16 +45,14 @@ class Player:
              log(f"You used {item['name']} and healed {item['value']} HP!")
              self.inventory.remove(item_id)
 
-    def run(self, enemy, combat, log):
-        if combat:
-            chance = random.choice(["Success", "Fail"])
-            if chance == "Success":
-                log("You managed to scrape away...")
-                in_combat = False
-                return True
-            else:
-                log(f"{self.name} stumbled and {enemy.name} caught you...")
-                return False
+    def run(self, enemy, log):
+        chance = random.choice(["Success", "Fail"])
+        if chance == "Success":
+            log("You managed to scrape away...")
+            return True
+        else:
+            log(f"{self.name} stumbled and {enemy.name} caught you...")
+            return False
 
     def backpack(self, log):
         if not self.inventory:

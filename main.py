@@ -10,7 +10,7 @@ from combat import *
 def main():
     player = load_player()
     enemy = None
-    start_gui(player, enemy, combat)
+    start_gui(player, enemy)
 
 
 main()
