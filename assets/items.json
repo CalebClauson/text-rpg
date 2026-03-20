@@ -1,0 +1,12 @@
+{
+  "potion": {
+    "name": "Potion",
+    "type": "heal",
+    "value": 10
+  },
+  "sword": {
+    "name": "Sword",
+    "type": "weapon",
+    "value": 5
+  }
+}

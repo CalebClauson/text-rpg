@@ -1,0 +1,42 @@
+{
+  "goblin": {
+    "hp": 30,
+    "attack": 5
+  },
+  "orc": {
+    "hp": 50,
+    "attack": 10
+  },
+  "skeleton": {
+    "hp": 25,
+    "attack": 6
+  },
+  "slime": {
+    "hp": 20,
+    "attack": 4
+  },
+  "bandit": {
+    "hp": 35,
+    "attack": 8
+  },
+  "wolf": {
+    "hp": 28,
+    "attack": 7
+  },
+  "spider": {
+    "hp": 22,
+    "attack": 6
+  },
+  "zombie": {
+    "hp": 40,
+    "attack": 6
+  },
+  "mage": {
+    "hp": 30,
+    "attack": 12
+  },
+  "dragon": {
+    "hp": 100,
+    "attack": 20
+  }
+}
