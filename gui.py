@@ -34,7 +34,7 @@ def start_gui(player, enemy, combat):
             btn1 = tk.Button(bottom_frame, text="Attack!", command=lambda: player.attack_enemy(current_enemy, log))
             btn2 = tk.Button(bottom_frame, text="Heal!", command=lambda: player.use_item("potion", log))
             btn3 = tk.Button(bottom_frame, text="Backpack!", command=lambda: player.backpack(log))
-            btn4 = tk.Button(bottom_frame, text="Run!", command=lambda: player.run(current_enemy, combat, log))
+            btn4 = tk.Button(bottom_frame, text="Run!", command= handle_run)
 
             btn1.grid(row=0, column=0)
             btn2.grid(row=0, column=1)
@@ -52,6 +52,24 @@ def start_gui(player, enemy, combat):
         current_enemy = combat_encounter(log)
         in_combat = True
         render_buttons()
+
+    def end_combat():
+        nonlocal in_combat, current_enemy
+
+        in_combat = False
+        current_enemy = None
+        render_buttons()
+
+    def handle_run():
+        nonlocal in_combat, current_enemy
+
+        success = player.run(current_enemy, combat, log)
+
+        if success:
+            in_combat = False
+            current_enemy = None
+            render_buttons()
+        
 
     render_buttons()
     root.mainloop()

@@ -19,10 +19,15 @@ class Player:
     def take_damage(self, damage, enemy, log):
         self.hp -= damage
         log(f"You took {damage} damage from {enemy.name}!")
+        log(f"{self.name} HP: {self.hp}/{self.max_hp}")
 
     def attack_enemy(self, enemy, log):
-        enemy.hp -= self.attack
-        log(f"You dealt {self.attack} damage to {enemy.name}!")
+        if enemy.hp > 0:
+            enemy.hp -= self.attack
+            log(f"You dealt {self.attack} damage to {enemy.name}!")
+            log(f"{enemy.name} {enemy.hp}/{enemy.max_hp}")
+        else:
+            log(f"{self.name} slaughtered the {enemy.name}")
 
     def use_item(self, item_id, log):
          if item_id not in self.inventory:
@@ -45,8 +50,11 @@ class Player:
             chance = random.choice(["Success", "Fail"])
             if chance == "Success":
                 log("You managed to scrape away...")
+                in_combat = False
+                return True
             else:
                 log(f"{self.name} stumbled and {enemy.name} caught you...")
+                return False
 
     def backpack(self, log):
         if not self.inventory:

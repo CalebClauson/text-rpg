@@ -2,6 +2,8 @@ from enemy import Enemy
 import json
 import random
 
+WIDTH = 10
+
 def generate_enemy():
     with open("assets/enemies.json", "r") as f:
         enemies_data = json.load(f)
@@ -34,4 +36,6 @@ def combat(player, enemy):
 def combat_encounter(log):
     enemy = generate_enemy()
     log(f"A {enemy.name} appears!")
+    log(f"-" * WIDTH)
+    log(f"{enemy.name} {enemy.hp}/{enemy.max_hp}")
     return enemy
