@@ -46,10 +46,6 @@ def handle_attack(player, enemy, log):
 def handle_heal(player, enemy, log):
     player.use_item("potion", log)
 
-    if not enemy.is_alive():
-        log(f"{enemy.name} has been defeated!")
-        return "enemy_dead"
-
     enemy.attack_player(player, log)
 
     if not player.is_alive():
