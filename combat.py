@@ -3,6 +3,9 @@ import json
 import random
 import time
 
+with open("assets/moves.json", "r") as f:
+    MOVES = json.load(f)
+
 WIDTH = 10
 
 
@@ -17,10 +20,11 @@ def generate_enemy():
         enemy_name.capitalize(),
         enemy_data["hp"],
         enemy_data["attack"],
+        enemy_data["armor"],
+        enemy_data["moves"],
         enemy_data["xp_reward"],
         enemy_data["gold_reward"]
     )
-
 
 def combat_encounter(log):
     enemy = generate_enemy()
@@ -29,21 +33,40 @@ def combat_encounter(log):
     log(f"{enemy.name} {enemy.hp}/{enemy.max_hp}")
     return enemy
 
+def get_move(move_id):
+    return MOVES[move_id]
+
 def enemy_turn(player, enemy, log):
-    log("-" * WIDTH)
-    log(f"{enemy.name} attacked {player.name} for {enemy.attack}")
-    enemy.attack_player(player, log)
+    attack_moves = []
+    other_moves = []
+
+    for move_id in enemy.moves:
+        move = get_move(move_id)
+
+        if move["type"] == "damage":
+            attack_moves.append(move)
+        else:
+            other_moves.append(move)
+
+    if not attack_moves:
+        log(f"{enemy.name} hesitated...")
+        return "continue"
+    
+    move = random.choice(attack_moves)
+    damage = round(enemy.attack * move["multiplier"])
+    player.take_damage(damage, enemy, log)
+    log(f"{enemy.name} used {move['name']} and dealt {damage} damage!")
 
     if not player.is_alive():
         log(f"{player.name} has fallen...")
-        log("-" * WIDTH)
         return "player_dead"
 
-    log("-" * WIDTH)
     return "continue"
 
-def handle_attack(player, enemy, move, log):
-    #needs logic: potential elemtents
+
+def player_turn(player, enemy, move_id, log):
+    move = get_move(move_id)
+
     if move["type"] == "damage":
         damage = round(player.attack * move["multiplier"])
         enemy.take_damage(damage)
@@ -60,7 +83,6 @@ def handle_attack(player, enemy, move, log):
 
         return enemy_turn(player, enemy, log)
 
-    #needs logic for potential mana to prevent infinite heals
     elif move["type"] == "heal":
         player.hp += move["value"]
         if player.hp > player.max_hp:
@@ -81,7 +103,7 @@ def handle_attack(player, enemy, move, log):
 
     return "continue"
 
-def handle_heal(player, enemy, log):
+def handle_potion(player, enemy, log):
     player.use_item("potion", log)
 
     enemy.attack_player(player, log)

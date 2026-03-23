@@ -93,5 +93,12 @@
     "target": "enemy",
     "condition": "enemy_below_half_hp",
     "description": "Deals huge damage to weakened enemies."
+  },
+  "bounce": {
+    "name": "Bounce",
+    "type": "damage",
+    "multiplier": 1.25,
+    "target": "enemy",
+    "description": "Bounces on the enemy."
   }
 }

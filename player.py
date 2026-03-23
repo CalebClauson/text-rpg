@@ -5,11 +5,12 @@ with open("assets/items.json", "r") as f:
     ITEMS = json.load(f)
 
 class Player:
-    def __init__(self, name, hp, attack, moves, inventory, gold, level, xp, xp_to_next):
+    def __init__(self, name, hp, attack, armor, moves, inventory, gold, level, xp, xp_to_next):
         self.name = name
         self.hp = hp
         self.max_hp = hp
         self.attack = attack
+        self.armor = armor
         self.moves = moves
         self.inventory = inventory if inventory is not None else []
         self.gold = gold
@@ -21,24 +22,11 @@ class Player:
         return self.hp > 0
 
     def take_damage(self, damage, enemy, log):
-         self.hp -= damage
+         self.hp -= round(damage * (100/(100 + self.armor)))
          if self.hp < 0:
              log(f"{self.name} 0/{self.max_hp}")
          else:
              log(f"{self.name} {self.hp}/{self.max_hp}")
-
-
-    # old attack
-    # def attack_enemy(self, enemy, log):
-    #     if enemy.hp > 0:
-    #         enemy.hp -= self.attack
-    #         log(f"You dealt {self.attack} damage to {enemy.name}!")
-    #         if enemy.hp < 0:
-    #             log(f"{enemy.name} 0/{enemy.max_hp}")
-    #         else:
-    #             log(f"{enemy.name} {enemy.hp}/{enemy.max_hp}")
-    #     else:
-    #         log(f"{self.name} slaughtered the {enemy.name}")
 
     def use_item(self, item_id, log):
          if item_id not in self.inventory:

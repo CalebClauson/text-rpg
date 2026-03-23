@@ -1,9 +1,6 @@
 import tkinter as tk
-from combat import *
-import json
+from combat import combat_encounter, player_turn, handle_potion, handle_run, get_move
 
-with open("assets/moves.json", "r") as f:
-    MOVES = json.load(f)
 
 def start_gui(player, enemy):
     current_enemy = None
@@ -38,17 +35,17 @@ def start_gui(player, enemy):
         if in_combat:
             if attack_panel:
                 for i, move_id in enumerate(player.moves):
-                    move = MOVES[move_id]
+                    move = get_move(move_id)
 
                     btn = tk.Button(
                         bottom_frame,
                         text=move["name"],
-                        command=lambda m=move: on_attack(m)
-                        )
+                        command=lambda m_id=move_id: on_attack(m_id)
+                    )
                     btn.grid(row=i // 2, column=i % 2)
 
-                    btn_back = tk.Button(bottom_frame, text="Back", command=close_attack_ui)
-                    btn_back.grid(row=(len(player.moves) // 2) + 1, column=0, columnspan=2)
+                btn_back = tk.Button(bottom_frame, text="Back", command=close_attack_ui)
+                btn_back.grid(row=(len(player.moves) // 2) + 1, column=0, columnspan=2)
 
             else:
                 btn1 = tk.Button(bottom_frame, text="Attack!", command=attack_ui)
@@ -68,28 +65,27 @@ def start_gui(player, enemy):
             btn1.grid(row=0, column=0)
             btn2.grid(row=0, column=1)
 
-    #combat helpers
+    #start and end of combat
 
     def start_combat():
-        nonlocal in_combat, current_enemy
+        nonlocal in_combat, current_enemy, attack_panel
         current_enemy = combat_encounter(log)
         in_combat = True
+        attack_panel = False
         render_buttons()
 
     def end_combat():
-        nonlocal in_combat, current_enemy
-
+        nonlocal in_combat, current_enemy, attack_panel
         in_combat = False
         current_enemy = None
+        attack_panel = False
         render_buttons()
 
-    
-    #button commands
-    
+    #button for moves
+
     def attack_ui():
         nonlocal attack_panel
         attack_panel = True
-        print(f"Attack_panel = {attack_panel}")
         render_buttons()
 
     def close_attack_ui():
@@ -97,15 +93,16 @@ def start_gui(player, enemy):
         attack_panel = False
         render_buttons()
 
+    #combat helpers
 
-    def on_attack(move):
-        result = handle_attack(player, current_enemy, move, log)
+    def on_attack(move_id):
+        result = player_turn(player, current_enemy, move_id, log)
 
         if result in ["enemy_dead", "player_dead"]:
             end_combat()
 
     def on_heal():
-        result = handle_heal(player, current_enemy, log)
+        result = handle_potion(player, current_enemy, log)
 
         if result in ["enemy_dead", "player_dead"]:
             end_combat()
@@ -115,8 +112,6 @@ def start_gui(player, enemy):
 
         if result in ["escaped", "player_dead"]:
             end_combat()
-
-        
 
     render_buttons()
     root.mainloop()
