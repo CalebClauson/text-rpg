@@ -7,9 +7,10 @@
   "xp": 0,
   "xp_to_next": 25,
   "moves": [
-    {"name": "Slash", "multiplier": 1.0},
-    {"name": "Heavy Strike", "multiplier": 1.5},
-    {"name": "Quick Jab", "multiplier": 0.8}
+    "slash",
+    "heavy_strike",
+    "quick_jab",
+    "guard"
   ],
   "inventory": ["potion", "sword"],
   "gold": 50

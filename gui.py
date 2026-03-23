@@ -1,5 +1,9 @@
 import tkinter as tk
 from combat import *
+import json
+
+with open("assets/moves.json", "r") as f:
+    MOVES = json.load(f)
 
 def start_gui(player, enemy):
     current_enemy = None
@@ -33,12 +37,14 @@ def start_gui(player, enemy):
 
         if in_combat:
             if attack_panel:
-                for i, move in enumerate(player.moves):
+                for i, move_id in enumerate(player.moves):
+                    move = MOVES[move_id]
+
                     btn = tk.Button(
-                    bottom_frame,
-                    text=move["name"],
-                    command=lambda m=move: on_attack(m)
-                    )
+                        bottom_frame,
+                        text=move["name"],
+                        command=lambda m=move: on_attack(m)
+                        )
                     btn.grid(row=i // 2, column=i % 2)
 
                     btn_back = tk.Button(bottom_frame, text="Back", command=close_attack_ui)

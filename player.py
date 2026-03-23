@@ -21,22 +21,24 @@ class Player:
         return self.hp > 0
 
     def take_damage(self, damage, enemy, log):
-        self.hp -= damage
-        if self.hp < 0:
-            log(f"{self.name} 0/{self.max_hp}")
-        else:
-            log(f"{self.name} {self.hp}/{self.max_hp}")
+         self.hp -= damage
+         if self.hp < 0:
+             log(f"{self.name} 0/{self.max_hp}")
+         else:
+             log(f"{self.name} {self.hp}/{self.max_hp}")
 
-    def attack_enemy(self, enemy, log):
-        if enemy.hp > 0:
-            enemy.hp -= self.attack
-            log(f"You dealt {self.attack} damage to {enemy.name}!")
-            if enemy.hp < 0:
-                log(f"{enemy.name} 0/{enemy.max_hp}")
-            else:
-                log(f"{enemy.name} {enemy.hp}/{enemy.max_hp}")
-        else:
-            log(f"{self.name} slaughtered the {enemy.name}")
+
+    # old attack
+    # def attack_enemy(self, enemy, log):
+    #     if enemy.hp > 0:
+    #         enemy.hp -= self.attack
+    #         log(f"You dealt {self.attack} damage to {enemy.name}!")
+    #         if enemy.hp < 0:
+    #             log(f"{enemy.name} 0/{enemy.max_hp}")
+    #         else:
+    #             log(f"{enemy.name} {enemy.hp}/{enemy.max_hp}")
+    #     else:
+    #         log(f"{self.name} slaughtered the {enemy.name}")
 
     def use_item(self, item_id, log):
          if item_id not in self.inventory:
@@ -79,8 +81,14 @@ class Player:
             item = ITEMS[item_id]
             log(f"- {item['name']} x{count}")
 
-    def gain_xp(self, enemy, log):
-        return
+    def gain_xp(self, amount, log):
+        self.xp += amount
+        if self.xp >= self.xp_to_next:
+            self.level += 1
+            log(f"{self.name} has leveled up! Level {self.level}")
+            self.attack += 2
+            self.max_hp += 10
+            self.hp = self.max_hp
 
     def show_stats(self, log):
         log(f"Name: {self.name}")

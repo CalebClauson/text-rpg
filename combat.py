@@ -1,6 +1,7 @@
 from enemy import Enemy
 import json
 import random
+import time
 
 WIDTH = 10
 
@@ -28,38 +29,57 @@ def combat_encounter(log):
     log(f"{enemy.name} {enemy.hp}/{enemy.max_hp}")
     return enemy
 
-
-def handle_attack(player, enemy, move, log):
-    damage = round(player.attack * move["multiplier"])
-    enemy.take_damage(damage)
-    log(f"{player.name} used {move['name']} and dealt {damage} damage!")
-    if enemy.hp < 0:
-        log(f"{enemy.name} HP: 0/{enemy.max_hp}")
-    else:
-        log(f"{enemy.name} HP: {enemy.hp}/{enemy.max_hp}")
-
-    if not enemy.is_alive():
-        log(f"{enemy.name} has been defeated!")
-
-        player.gain_xp(enemy.xp_reward, log)
-        player.gold += enemy.gold_reward
-        log(f"{player.name} gained {enemy.gold_reward} gold!")
-
-        return "enemy_dead"
-
+def enemy_turn(player, enemy, log):
+    log("-" * WIDTH)
+    log(f"{enemy.name} attacked {player.name} for {enemy.attack}")
     enemy.attack_player(player, log)
 
     if not player.is_alive():
         log(f"{player.name} has fallen...")
+        log("-" * WIDTH)
         return "player_dead"
 
+    log("-" * WIDTH)
     return "continue"
 
-def handle_move(player, enemy, log):
-    damage = player.attack * player.move["multiplier"]
-    log(f"{player.name} used {player.move['name']}!")
-    enemy.take_damage(damage)
+def handle_attack(player, enemy, move, log):
+    #needs logic: potential elemtents
+    if move["type"] == "damage":
+        damage = round(player.attack * move["multiplier"])
+        enemy.take_damage(damage)
+        log(f"{player.name} used {move['name']} and dealt {damage} damage!")
+        log(f"{enemy.name} HP: {max(enemy.hp, 0)}/{enemy.max_hp}")
 
+        if enemy.hp <= 0:
+            log(f"{enemy.name} has been defeated!")
+            player.gain_xp(enemy.xp_reward, log)
+            player.gold += enemy.gold_reward
+            log(f"{player.name} gained {enemy.gold_reward} gold!")
+            log(f"{player.name} gained {enemy.xp_reward} experience!")
+            return "enemy_dead"
+
+        return enemy_turn(player, enemy, log)
+
+    #needs logic for potential mana to prevent infinite heals
+    elif move["type"] == "heal":
+        player.hp += move["value"]
+        if player.hp > player.max_hp:
+            player.hp = player.max_hp
+
+        log(f"{player.name} used {move['name']} and healed {move['value']} HP!")
+        return enemy_turn(player, enemy, log)
+
+    #needs logic
+    elif move["type"] == "buff":
+        log(f"{player.name} used {move['name']} and gained +{move['value']} {move['stat']}!")
+        return enemy_turn(player, enemy, log)
+
+    #needs logic
+    elif move["type"] == "status":
+        log(f"{player.name} used {move['name']} and tried to apply {move['effect']}!")
+        return enemy_turn(player, enemy, log)
+
+    return "continue"
 
 def handle_heal(player, enemy, log):
     player.use_item("potion", log)
@@ -71,7 +91,6 @@ def handle_heal(player, enemy, log):
         return "player_dead"
 
     return "continue"
-
 
 def handle_run(player, enemy,log):
     success = player.run(enemy, log)

@@ -1,0 +1,97 @@
+{
+  "slash": {
+    "name": "Slash",
+    "type": "damage",
+    "multiplier": 1.0,
+    "target": "enemy",
+    "description": "A standard sword attack."
+  },
+  "heavy_strike": {
+    "name": "Heavy Strike",
+    "type": "damage",
+    "multiplier": 1.5,
+    "target": "enemy",
+    "description": "A slower but stronger attack."
+  },
+  "quick_jab": {
+    "name": "Quick Jab",
+    "type": "damage",
+    "multiplier": 0.8,
+    "target": "enemy",
+    "description": "A fast but weaker strike."
+  },
+  "fireball": {
+    "name": "Fireball",
+    "type": "damage",
+    "multiplier": 1.3,
+    "target": "enemy",
+    "element": "fire",
+    "description": "A ball of fire that burns the enemy."
+  },
+  "heal": {
+    "name": "Heal",
+    "type": "heal",
+    "value": 20,
+    "target": "self",
+    "description": "Restore some health."
+  },
+  "guard": {
+    "name": "Guard",
+    "type": "buff",
+    "stat": "defense",
+    "value": 5,
+    "duration": 2,
+    "target": "self",
+    "description": "Raise defense for 2 turns."
+  },
+  "poison_sting": {
+    "name": "Poison Sting",
+    "type": "status",
+    "effect": "poison",
+    "chance": 0.4,
+    "duration": 3,
+    "target": "enemy",
+    "description": "A strike that may poison the enemy."
+  },
+  "stunning_blow": {
+    "name": "Stunning Blow",
+    "type": "status",
+    "effect": "stun",
+    "chance": 0.25,
+    "duration": 1,
+    "target": "enemy",
+    "description": "A heavy hit that may stun the enemy."
+  },
+  "life_drain": {
+    "name": "Life Drain",
+    "type": "drain",
+    "multiplier": 0.9,
+    "heal_percent": 0.5,
+    "target": "enemy",
+    "description": "Deal damage and heal for part of it."
+  },
+  "battle_cry": {
+    "name": "Battle Cry",
+    "type": "buff",
+    "stat": "attack",
+    "value": 3,
+    "duration": 3,
+    "target": "self",
+    "description": "Increase attack for 3 turns."
+  },
+  "sweep": {
+    "name": "Sweep",
+    "type": "damage",
+    "multiplier": 1.1,
+    "target": "enemy",
+    "description": "A wide horizontal attack."
+  },
+  "execute": {
+    "name": "Execute",
+    "type": "damage",
+    "multiplier": 2.0,
+    "target": "enemy",
+    "condition": "enemy_below_half_hp",
+    "description": "Deals huge damage to weakened enemies."
+  }
+}
