@@ -9,36 +9,45 @@ def load_player():
         player = Player(
             data["name"],
             data["hp"],
-            data["attack"]
+            data["attack"],
+            data["moves"],
+            data["inventory"],
+            data["gold"],
+            data["level"],
+            data["xp"],
+            data["xp_to_next"]
         )
 
         player.max_hp = data["max_hp"]
-        player.inventory = data["inventory"]
-        player.gold = data["gold"]
 
         return player
 
     except FileNotFoundError:
-        # first time playing → create new player
-        return Player("Hero", 100, 10)
-
-def load_player():
-    try:
-        with open("assets/player.json", "r") as f:
-            data = json.load(f)
-
-        player = Player(
-            data["name"],
-            data["hp"],
-            data["attack"]
+        return Player(
+            "Hero",
+            100,
+            10,
+            [],
+            [],
+            0,
+            1,
+            0,
+            25
         )
 
-        player.max_hp = data["max_hp"]
-        player.inventory = data["inventory"]
-        player.gold = data["gold"]
+def save_player(player):
+    data = {
+        "name": player.name,
+        "hp": player.hp,
+        "max_hp": player.max_hp,
+        "attack": player.attack,
+        "moves": player.moves,
+        "inventory": player.inventory,
+        "gold": player.gold,
+        "level": player.level,
+        "xp": player.xp,
+        "xp_to_next": player.xp_to_next
+    }
 
-        return player
-
-    except FileNotFoundError:
-        # first time playing → create new player
-        return Player("Hero", 100, 10)
+    with open("assets/player.json", "w") as f:
+        json.dump(data, f, indent=2)

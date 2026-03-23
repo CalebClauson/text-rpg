@@ -15,7 +15,9 @@ def generate_enemy():
     return Enemy(
         enemy_name.capitalize(),
         enemy_data["hp"],
-        enemy_data["attack"]
+        enemy_data["attack"],
+        enemy_data["xp_reward"],
+        enemy_data["gold_reward"]
     )
 
 
@@ -27,11 +29,22 @@ def combat_encounter(log):
     return enemy
 
 
-def handle_attack(player, enemy, log):
-    player.attack_enemy(enemy, log)
+def handle_attack(player, enemy, move, log):
+    damage = round(player.attack * move["multiplier"])
+    enemy.take_damage(damage)
+    log(f"{player.name} used {move['name']} and dealt {damage} damage!")
+    if enemy.hp < 0:
+        log(f"{enemy.name} HP: 0/{enemy.max_hp}")
+    else:
+        log(f"{enemy.name} HP: {enemy.hp}/{enemy.max_hp}")
 
     if not enemy.is_alive():
         log(f"{enemy.name} has been defeated!")
+
+        player.gain_xp(enemy.xp_reward, log)
+        player.gold += enemy.gold_reward
+        log(f"{player.name} gained {enemy.gold_reward} gold!")
+
         return "enemy_dead"
 
     enemy.attack_player(player, log)
@@ -41,6 +54,11 @@ def handle_attack(player, enemy, log):
         return "player_dead"
 
     return "continue"
+
+def handle_move(player, enemy, log):
+    damage = player.attack * player.move["multiplier"]
+    log(f"{player.name} used {player.move['name']}!")
+    enemy.take_damage(damage)
 
 
 def handle_heal(player, enemy, log):

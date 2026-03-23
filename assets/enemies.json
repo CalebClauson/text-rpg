@@ -1,42 +1,62 @@
 {
   "goblin": {
     "hp": 30,
-    "attack": 5
+    "attack": 5,
+    "xp_reward": 10,
+    "gold_reward": 5
   },
   "orc": {
     "hp": 50,
-    "attack": 10
+    "attack": 10,
+    "xp_reward": 20,
+    "gold_reward": 10
   },
   "skeleton": {
     "hp": 25,
-    "attack": 6
+    "attack": 6,
+    "xp_reward": 9,
+    "gold_reward": 4
   },
   "slime": {
     "hp": 20,
-    "attack": 4
+    "attack": 4,
+    "xp_reward": 6,
+    "gold_reward": 2
   },
   "bandit": {
     "hp": 35,
-    "attack": 8
+    "attack": 8,
+    "xp_reward": 13,
+    "gold_reward": 8
   },
   "wolf": {
     "hp": 28,
-    "attack": 7
+    "attack": 7,
+    "xp_reward": 10,
+    "gold_reward": 3
   },
   "spider": {
     "hp": 22,
-    "attack": 6
+    "attack": 6,
+    "xp_reward": 8,
+    "gold_reward": 2
   },
   "zombie": {
     "hp": 40,
-    "attack": 6
+    "attack": 6,
+    "xp_reward": 14,
+    "gold_reward": 6
   },
   "mage": {
     "hp": 30,
-    "attack": 12
+    "attack": 12,
+    "xp_reward": 18,
+    "gold_reward": 12
   },
   "dragon": {
     "hp": 100,
-    "attack": 20
+    "attack": 20,
+    "xp_reward": 50,
+    "gold_reward": 25
   }
 }

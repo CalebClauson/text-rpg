@@ -4,6 +4,7 @@ from combat import *
 def start_gui(player, enemy):
     current_enemy = None
     in_combat = False
+    attack_panel = False
 
     root = tk.Tk()
     root.title("Text RPG")
@@ -31,21 +32,37 @@ def start_gui(player, enemy):
             widget.destroy()
 
         if in_combat:
-            btn1 = tk.Button(bottom_frame, text="Attack!", command=on_attack)
-            btn2 = tk.Button(bottom_frame, text="Heal!", command=on_heal)
-            btn3 = tk.Button(bottom_frame, text="Backpack!", command=lambda: player.backpack(log))
-            btn4 = tk.Button(bottom_frame, text="Run!", command=on_run)
+            if attack_panel:
+                for i, move in enumerate(player.moves):
+                    btn = tk.Button(
+                    bottom_frame,
+                    text=move["name"],
+                    command=lambda m=move: on_attack(m)
+                    )
+                    btn.grid(row=i // 2, column=i % 2)
 
-            btn1.grid(row=0, column=0)
-            btn2.grid(row=0, column=1)
-            btn3.grid(row=1, column=0)
-            btn4.grid(row=1, column=1)
+                    btn_back = tk.Button(bottom_frame, text="Back", command=close_attack_ui)
+                    btn_back.grid(row=(len(player.moves) // 2) + 1, column=0, columnspan=2)
+
+            else:
+                btn1 = tk.Button(bottom_frame, text="Attack!", command=attack_ui)
+                btn2 = tk.Button(bottom_frame, text="Heal!", command=on_heal)
+                btn3 = tk.Button(bottom_frame, text="Backpack!", command=lambda: player.backpack(log))
+                btn4 = tk.Button(bottom_frame, text="Run!", command=on_run)
+
+                btn1.grid(row=0, column=0)
+                btn2.grid(row=0, column=1)
+                btn3.grid(row=1, column=0)
+                btn4.grid(row=1, column=1)
+
         else:
             btn1 = tk.Button(bottom_frame, text="Left!")
             btn2 = tk.Button(bottom_frame, text="Right!", command=start_combat)
 
             btn1.grid(row=0, column=0)
             btn2.grid(row=0, column=1)
+
+    #combat helpers
 
     def start_combat():
         nonlocal in_combat, current_enemy
@@ -59,9 +76,24 @@ def start_gui(player, enemy):
         in_combat = False
         current_enemy = None
         render_buttons()
+
     
-    def on_attack():
-        result = handle_attack(player, current_enemy, log)
+    #button commands
+    
+    def attack_ui():
+        nonlocal attack_panel
+        attack_panel = True
+        print(f"Attack_panel = {attack_panel}")
+        render_buttons()
+
+    def close_attack_ui():
+        nonlocal attack_panel
+        attack_panel = False
+        render_buttons()
+
+
+    def on_attack(move):
+        result = handle_attack(player, current_enemy, move, log)
 
         if result in ["enemy_dead", "player_dead"]:
             end_combat()
@@ -77,6 +109,7 @@ def start_gui(player, enemy):
 
         if result in ["escaped", "player_dead"]:
             end_combat()
+
         
 
     render_buttons()

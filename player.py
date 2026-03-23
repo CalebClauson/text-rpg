@@ -5,27 +5,36 @@ with open("assets/items.json", "r") as f:
     ITEMS = json.load(f)
 
 class Player:
-    def __init__(self, name, hp, attack):
+    def __init__(self, name, hp, attack, moves, inventory, gold, level, xp, xp_to_next):
         self.name = name
         self.hp = hp
         self.max_hp = hp
         self.attack = attack
-        self.inventory = []
-        self.gold = 0
+        self.moves = moves
+        self.inventory = inventory if inventory is not None else []
+        self.gold = gold
+        self.level = level
+        self.xp = xp
+        self.xp_to_next = xp_to_next
 
     def is_alive(self):
         return self.hp > 0
 
     def take_damage(self, damage, enemy, log):
         self.hp -= damage
-        log(f"You took {damage} damage from {enemy.name}!")
-        log(f"{self.name} HP: {self.hp}/{self.max_hp}")
+        if self.hp < 0:
+            log(f"{self.name} 0/{self.max_hp}")
+        else:
+            log(f"{self.name} {self.hp}/{self.max_hp}")
 
     def attack_enemy(self, enemy, log):
         if enemy.hp > 0:
             enemy.hp -= self.attack
             log(f"You dealt {self.attack} damage to {enemy.name}!")
-            log(f"{enemy.name} {enemy.hp}/{enemy.max_hp}")
+            if enemy.hp < 0:
+                log(f"{enemy.name} 0/{enemy.max_hp}")
+            else:
+                log(f"{enemy.name} {enemy.hp}/{enemy.max_hp}")
         else:
             log(f"{self.name} slaughtered the {enemy.name}")
 
@@ -69,6 +78,9 @@ class Player:
         for item_id, count in item_counts.items():
             item = ITEMS[item_id]
             log(f"- {item['name']} x{count}")
+
+    def gain_xp(self, enemy, log):
+        return
 
     def show_stats(self, log):
         log(f"Name: {self.name}")
