@@ -1,11 +1,12 @@
 
 
 class Enemy:
-    def __init__(self, name, hp, attack, armor,  moves, xp_reward, gold_reward):
+    def __init__(self, name, hp, attack, speed, armor,  moves, xp_reward, gold_reward):
         self.name = name
         self.hp = hp
         self.max_hp = hp
         self.attack = attack
+        self.speed = speed
         self.armor = armor
         self.moves = moves
         self.xp_reward = xp_reward
@@ -16,7 +17,9 @@ class Enemy:
         return self.hp > 0
 
     def take_damage(self, damage):
-        self.hp -= round(damage * (100/(100 + self.armor)))
+        reduced = round(damage * (100 / (100 + self.armor)))
+        self.hp -= reduced
+        return reduced
 
     def attack_player(self, player, log):
         player.take_damage(self.attack, self, log)

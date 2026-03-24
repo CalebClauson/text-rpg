@@ -1,5 +1,5 @@
 import tkinter as tk
-from combat import combat_encounter, player_turn, handle_potion, handle_run, get_move
+from combat import combat_encounter, handle_potion, handle_run, get_move, handle_move, enemy_turn
 
 
 def start_gui(player, enemy):
@@ -21,6 +21,27 @@ def start_gui(player, enemy):
 
     text_box = tk.Text(middle_frame, height=10, width=50)
     text_box.pack(expand=True)
+
+
+    #stats labels
+    player_stats_label = tk.Label(top_frame, text="")
+    player_stats_label.grid(row=0, column=0, padx=20)
+
+    enemy_stats_label = tk.Label(top_frame, text="")
+    enemy_stats_label.grid(row=0, column=1, padx=20)
+
+    def refresh_stats():
+        player_stats_label.config(
+            text=f"{player.name}\nHP: {player.hp}/{player.max_hp}\nATK: {player.attack}\nARMOR: {player.armor}"
+        )
+
+        if current_enemy is not None:
+            shown_hp = max(0, current_enemy.hp)
+            enemy_stats_label.config(
+                text=f"{current_enemy.name}\nHP: {shown_hp}/{current_enemy.max_hp}\nATK: {current_enemy.attack}\nARMOR: {current_enemy.armor}"
+            )
+        else:
+            enemy_stats_label.config(text="")
 
     def log(message):
         text_box.config(state="normal")
@@ -69,9 +90,10 @@ def start_gui(player, enemy):
 
     def start_combat():
         nonlocal in_combat, current_enemy, attack_panel
-        current_enemy = combat_encounter(log)
+        current_enemy = combat_encounter(player, log)
         in_combat = True
         attack_panel = False
+        refresh_stats()
         render_buttons()
 
     def end_combat():
@@ -96,22 +118,29 @@ def start_gui(player, enemy):
     #combat helpers
 
     def on_attack(move_id):
-        result = player_turn(player, current_enemy, move_id, log)
-
+        user = player
+        other = current_enemy
+        result = handle_move(user, other, move_id, log)
+        refresh_stats()
         if result in ["enemy_dead", "player_dead"]:
             end_combat()
+        else:
+            enemy_turn(player, current_enemy, log)
 
     def on_heal():
         result = handle_potion(player, current_enemy, log)
-
+        refresh_stats()
         if result in ["enemy_dead", "player_dead"]:
             end_combat()
+        else:
+            enemy_turn(player, current_enemy, log)
 
     def on_run():
         result = handle_run(player, current_enemy, log)
-
+        refresh_stats()
         if result in ["escaped", "player_dead"]:
             end_combat()
 
     render_buttons()
+    refresh_stats()
     root.mainloop()

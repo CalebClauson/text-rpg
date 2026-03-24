@@ -1,121 +1,121 @@
 {
-  "goblin": {
-    "hp": 30,
-    "attack": 5,
-    "armor": 5,
-    "xp_reward": 10,
-    "gold_reward": 5,
-    "moves": [
-    "quick_jab",
-    "guard"
-  ]
-    
-  },
-  "orc": {
-    "hp": 50,
-    "attack": 10,
-    "armor": 12,
-    "xp_reward": 20,
-    "gold_reward": 10,
-    "moves": [
-    "heavy_strike",
-    "guard"
-  ]
-
-  },
-  "skeleton": {
-    "hp": 25,
-    "attack": 6,
-    "armor": 6,
-    "xp_reward": 9,
-    "gold_reward": 4,
-    "moves": [
-    "slash",
-    "heavy_strike"
-  ]
-
-  },
-  "slime": {
-    "hp": 20,
-    "attack": 4,
-    "armor": 0,
-    "xp_reward": 6,
-    "gold_reward": 2,
-    "moves": [
-    "bounce"
-  ]
-
-  },
   "bandit": {
     "hp": 35,
     "attack": 8,
     "armor": 10,
+    "speed": 7,
     "xp_reward": 13,
     "gold_reward": 8,
     "moves": [
-    "slash",
-    "guard"
-  ]
-
-  },
-  "wolf": {
-    "hp": 28,
-    "attack": 7,
-    "armor": 2,
-    "xp_reward": 10,
-    "gold_reward": 3,
-    "moves": [
-    "slash",
-    "quick_jab"
-  ]
-
-  },
-  "spider": {
-    "hp": 22,
-    "attack": 6,
-    "armor": 4,
-    "xp_reward": 8,
-    "gold_reward": 2,
-    "moves": [
-    "poison_sting",
-    "quick_jab"
-  ]
-
-  },
-  "zombie": {
-    "hp": 40,
-    "attack": 6,
-    "armor": 8,
-    "xp_reward": 14,
-    "gold_reward": 6,
-    "moves": [
-    "heavy_strike",
-    "battle_cry"
-  ]
-
-  },
-  "mage": {
-    "hp": 30,
-    "attack": 12,
-    "armor": 0,
-    "xp_reward": 18,
-    "gold_reward": 12,
-    "moves": [
-    "fireball",
-    "life_drain"
-  ]
-
+      "slash",
+      "guard"
+    ]
   },
   "dragon": {
     "hp": 100,
     "attack": 20,
     "armor": 15,
+    "speed": 3,
     "xp_reward": 50,
     "gold_reward": 25,
     "moves": [
-    "slash",
-    "guard"
-  ]
-
+      "slash",
+      "guard"
+    ]
+  },
+  "goblin": {
+    "hp": 30,
+    "attack": 5,
+    "armor": 5,
+    "speed": 8,
+    "xp_reward": 10,
+    "gold_reward": 5,
+    "moves": [
+      "quick_jab",
+      "guard"
+    ]
+  },
+  "mage": {
+    "hp": 30,
+    "attack": 12,
+    "armor": 0,
+    "speed": 6,
+    "xp_reward": 18,
+    "gold_reward": 12,
+    "moves": [
+      "fireball",
+      "life_drain"
+    ]
+  },
+  "orc": {
+    "hp": 50,
+    "attack": 10,
+    "armor": 12,
+    "speed": 4,
+    "xp_reward": 20,
+    "gold_reward": 10,
+    "moves": [
+      "heavy_strike",
+      "guard"
+    ]
+  },
+  "skeleton": {
+    "hp": 25,
+    "attack": 6,
+    "armor": 6,
+    "speed": 5,
+    "xp_reward": 9,
+    "gold_reward": 4,
+    "moves": [
+      "slash",
+      "heavy_strike"
+    ]
+  },
+  "slime": {
+    "hp": 20,
+    "attack": 4,
+    "armor": 0,
+    "speed": 2,
+    "xp_reward": 6,
+    "gold_reward": 2,
+    "moves": [
+      "bounce"
+    ]
+  },
+  "spider": {
+    "hp": 22,
+    "attack": 6,
+    "armor": 4,
+    "speed": 9,
+    "xp_reward": 8,
+    "gold_reward": 2,
+    "moves": [
+      "poison_sting",
+      "quick_jab"
+    ]
+  },
+  "wolf": {
+    "hp": 28,
+    "attack": 7,
+    "armor": 2,
+    "speed": 8,
+    "xp_reward": 10,
+    "gold_reward": 3,
+    "moves": [
+      "slash",
+      "quick_jab"
+    ]
+  },
+  "zombie": {
+    "hp": 40,
+    "attack": 6,
+    "armor": 8,
+    "speed": 1,
+    "xp_reward": 14,
+    "gold_reward": 6,
+    "moves": [
+      "heavy_strike",
+      "battle_cry"
+    ]
   }
 }
