@@ -18,7 +18,7 @@
       {
         "type": "damage",
         "target": "enemy",
-        "multiplier": 1.5,
+        "multiplier": 1.45,
         "element": null
       }
     ],
@@ -31,7 +31,7 @@
       {
         "type": "damage",
         "target": "enemy",
-        "multiplier": 0.8,
+        "multiplier": 0.75,
         "element": null
       }
     ],
@@ -44,12 +44,12 @@
       {
         "type": "damage",
         "target": "enemy",
-        "multiplier": 1.3,
+        "multiplier": 1.25,
         "element": "fire"
       }
     ],
     "conditions": [],
-    "description": "A ball of fire that burns the enemy."
+    "description": "A ball of fire that scorches the enemy."
   },
   "life_drain": {
     "name": "Life Drain",
@@ -57,7 +57,7 @@
       {
         "type": "drain",
         "target": "enemy",
-        "multiplier": 0.9,
+        "multiplier": 0.85,
         "heal_percent": 0.5
       }
     ],
@@ -83,14 +83,14 @@
       {
         "type": "damage",
         "target": "enemy",
-        "multiplier": 2.0,
+        "multiplier": 2.2,
         "element": null
       }
     ],
     "conditions": [
       {
         "type": "enemy_hp_below_percent",
-        "value": 0.5
+        "value": 0.4
       }
     ],
     "description": "Deals huge damage to weakened enemies."
@@ -101,14 +101,13 @@
       {
         "type": "damage",
         "target": "enemy",
-        "multiplier": 1.25,
+        "multiplier": 1.15,
         "element": null
       }
     ],
     "conditions": [],
     "description": "Bounces on the enemy."
   },
-
   "guard": {
     "name": "Guard",
     "effects": [
@@ -116,12 +115,12 @@
         "type": "buff",
         "target": "self",
         "stat": "armor",
-        "value": 5,
+        "value": 4,
         "duration": 2
       }
     ],
     "conditions": [],
-    "description": "Raise defense for 2 turns."
+    "description": "Raise armor for 2 turns."
   },
   "battle_cry": {
     "name": "Battle Cry",
@@ -137,14 +136,13 @@
     "conditions": [],
     "description": "Increase attack for 3 turns."
   },
-
   "heal": {
     "name": "Heal",
     "effects": [
       {
         "type": "heal",
         "target": "self",
-        "value": 20
+        "value": 18
       }
     ],
     "conditions": [],
@@ -154,24 +152,37 @@
     "name": "Poison Sting",
     "effects": [
       {
+        "type": "damage",
+        "target": "enemy",
+        "multiplier": 0.7,
+        "element": null
+      },
+      {
         "type": "status",
         "target": "enemy",
         "effect": "poison",
-        "chance": 0.4,
-        "duration": 3
+        "chance": 0.55,
+        "duration": 3,
+        "value": 4
       }
     ],
     "conditions": [],
-    "description": "A strike that may poison the enemy."
+    "description": "A light strike that may poison the enemy."
   },
   "stunning_blow": {
     "name": "Stunning Blow",
     "effects": [
       {
+        "type": "damage",
+        "target": "enemy",
+        "multiplier": 1.0,
+        "element": null
+      },
+      {
         "type": "status",
         "target": "enemy",
         "effect": "stun",
-        "chance": 0.25,
+        "chance": 0.3,
         "duration": 1
       }
     ],

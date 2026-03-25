@@ -10,8 +10,11 @@ class Player:
         self.hp = hp
         self.max_hp = hp
         self.attack = attack
+        self.base_attack = attack
         self.speed = speed
         self.armor = armor
+        self.base_armor = armor
+        self.status_effects = []
         self.moves = moves
         self.inventory = inventory if inventory is not None else []
         self.gold = gold
@@ -73,7 +76,8 @@ class Player:
         if self.xp >= self.xp_to_next:
             self.level += 1
             log(f"{self.name} has leveled up! Level {self.level}")
-            self.attack += 2
+            self.base_attack += 2
+            self.attack = self.base_attack
             self.max_hp += 10
             self.hp = self.max_hp
 
@@ -82,3 +86,7 @@ class Player:
         log(f"Health: {self.hp}/{self.max_hp}")
         log(f"Attack: {self.attack}")
         log(f"Gold: {self.gold}")
+
+    def reset_combat_stats(self):
+        self.attack = self.base_attack
+        self.armor = self.base_armor

@@ -9,7 +9,7 @@
   "xp": 0,
   "xp_to_next": 25,
   "moves": [
-    "slash",
+    "poison_sting",
     "heavy_strike",
     "quick_jab",
     "guard"

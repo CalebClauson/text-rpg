@@ -1,5 +1,6 @@
 import tkinter as tk
 from combat import combat_encounter, handle_potion, handle_run, get_move, handle_move, enemy_turn
+from status_effects import process_status_start_turn, update_status_durations
 
 
 def start_gui(player, enemy):
@@ -116,11 +117,28 @@ def start_gui(player, enemy):
         render_buttons()
 
     #combat helpers
+    def begin_player_turn():
+        stunned = process_status_start_turn(player, log)
+        refresh_stats()
+        if not player.is_alive():
+            end_combat()
+            return "player_dead"
+        if stunned:
+            update_status_durations(player, log)
+            refresh_stats()
+            enemy_turn(player, current_enemy, log)
+            return "turn_skipped"
+
+        return "continue"
 
     def on_attack(move_id):
+        start_result = begin_player_turn()
+        if start_result in ["player_dead", "turn_skipped"]:
+            return
         user = player
         other = current_enemy
         result = handle_move(user, other, move_id, log)
+        update_status_durations(player, log)
         refresh_stats()
         if result in ["enemy_dead", "player_dead"]:
             end_combat()
@@ -129,6 +147,7 @@ def start_gui(player, enemy):
 
     def on_heal():
         result = handle_potion(player, current_enemy, log)
+        update_status_durations(player, log)
         refresh_stats()
         if result in ["enemy_dead", "player_dead"]:
             end_combat()
@@ -137,6 +156,7 @@ def start_gui(player, enemy):
 
     def on_run():
         result = handle_run(player, current_enemy, log)
+        update_status_durations(player, log)
         refresh_stats()
         if result in ["escaped", "player_dead"]:
             end_combat()

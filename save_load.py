@@ -10,31 +10,33 @@ def load_player():
             data["name"],
             data["hp"],
             data["attack"],
-            data["speed"],
-            data["armor"],
-            data["moves"],
-            data["inventory"],
-            data["gold"],
-            data["level"],
-            data["xp"],
-            data["xp_to_next"]
+            data.get("speed", 5),
+            data.get("armor", 0),
+            data.get("moves", ["slash"]),
+            data.get("inventory", []),
+            data.get("gold", 0),
+            data.get("level", 1),
+            data.get("xp", 0),
+            data.get("xp_to_next", 25)
         )
 
-        player.max_hp = data["max_hp"]
+        player.max_hp = data.get("max_hp", player.hp)
 
         return player
 
     except FileNotFoundError:
         return Player(
             "Hero",
-            100,
-            10,
-            [],
-            [],
-            0,
-            1,
-            0,
-            25
+            100,          # hp
+            10,           # attack
+            5,            # speed
+            0,            # armor
+            ["slash"],    # moves
+            [],           # inventory
+            0,            # gold
+            1,            # level
+            0,            # xp
+            25            # xp_to_next
         )
 
 def save_player(player):
@@ -42,9 +44,9 @@ def save_player(player):
         "name": player.name,
         "hp": player.hp,
         "max_hp": player.max_hp,
-        "attack": player.attack,
+        "attack": player.base_attack,
         "speed": player.speed,
-        "armor": player.armor,
+        "armor": player.base_armor,
         "moves": player.moves,
         "inventory": player.inventory,
         "gold": player.gold,
