@@ -125,8 +125,8 @@ def start_gui(player, enemy):
 
             else:
                 btn1 = make_button(bottom_frame, "Attack!", attack_ui, bg=ACCENT_BLUE)
-                btn2 = make_button(bottom_frame, "Heal!", on_heal, bg=ACCENT_GREEN)
-                btn3 = make_button(bottom_frame, "Backpack!", lambda: player.backpack(log), bg=BG_WIDGET)
+                btn2 = make_button(bottom_frame, "Heal", on_heal, bg=ACCENT_GREEN)
+                btn3 = make_button(bottom_frame, "Backpack", lambda: player.backpack(log), bg=BG_WIDGET)
                 btn4 = make_button(bottom_frame, "Run!", on_run, bg=ACCENT_RED)
 
                 btn1.grid(row=0, column=0, padx=8, pady=8, sticky="ew")
@@ -174,6 +174,7 @@ def start_gui(player, enemy):
         render_buttons()
 
     #combat helpers
+    
     def begin_player_turn():
         stunned = process_status_start_turn(player, log)
         refresh_stats()
