@@ -32,7 +32,7 @@ def combat_encounter(player, log):
     log(f"A {enemy.name} appears!")
     log("-" * WIDTH)
     if enemy.speed > player.speed:
-        log(f"{enemy.name} outsped {player.name}....")
+        log(f"{enemy.name} outsped {player.name}....", "enemy")
         enemy_turn(player, enemy, log)
     return enemy
 
@@ -45,7 +45,7 @@ def handle_potion(player, enemy, log):
     enemy.attack_player(player, log)
 
     if not player.is_alive():
-        log(f"{player.name} has fallen...")
+        log(f"{player.name} has fallen...", "enemy")
         return "player_dead"
 
     return "continue"
@@ -59,12 +59,12 @@ def handle_run(player, enemy,log):
     enemy_turn(player, enemy, log)
 
     if not player.is_alive():
-        log(f"{player.name} has fallen...")
+        log(f"{player.name} has fallen...", "enemy")
         return "player_dead"
 
     return "continue"
 
-def handle_move(user, other, move_id, log):
+def handle_move(user, other, move_id, log, tag="normal"):
     move = get_move(move_id)
 
     if not move:
@@ -83,7 +83,7 @@ def handle_move(user, other, move_id, log):
         if effect["type"] == "damage":
             damage = round(user.attack * effect["multiplier"])
             actual_damage = target.take_damage(damage)
-            log(f"{user.name} used {move['name']} and dealt {actual_damage} damage to {target.name}.")
+            log(f"{user.name} used {move['name']} and dealt {actual_damage} damage to {target.name}.", tag)
 
         elif effect["type"] == "heal":
             heal_amount = effect["value"]
@@ -178,7 +178,7 @@ def enemy_turn(player, enemy, log):
         log(f"{enemy.name} has no moves!")
         return "continue"
 
-    result = handle_move(user, other, chosen_move, log)
+    result = handle_move(user, other, chosen_move, log, "enemy")
 
     if result in ["enemy_dead", "player_dead"]:
         return result
