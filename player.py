@@ -71,15 +71,17 @@ class Player:
             item = ITEMS[item_id]
             log(f"- {item['name']} x{count}")
 
-    def gain_xp(self, amount, log):
+    def gain_xp(self, amount, log , tag="player"):
         self.xp += amount
         if self.xp >= self.xp_to_next:
             self.level += 1
-            log(f"{self.name} has leveled up! Level {self.level}")
+            log(f"{self.name} has leveled up! Level {self.level}" ,tag)
             self.base_attack += 2
             self.attack = self.base_attack
             self.max_hp += 10
             self.hp = self.max_hp
+            self.xp_to_next = self.xp_to_next + (self.level * 10)
+            self.xp = 0
 
     def show_stats(self, log):
         log(f"Name: {self.name}")

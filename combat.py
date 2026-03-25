@@ -1,4 +1,5 @@
 from enemy import Enemy
+from player import Player
 import json
 import random
 from status_effects import apply_status, process_status_start_turn, update_status_durations
@@ -9,26 +10,36 @@ with open("assets/moves.json", "r") as f:
 WIDTH = 10
 
 
-def generate_enemy():
+def generate_enemy(player):
     with open("assets/enemies.json", "r") as f:
         enemies_data = json.load(f)
 
     enemy_name = random.choice(list(enemies_data.keys()))
     enemy_data = enemies_data[enemy_name]
 
+    level_bonus = max(0, player.level - 1)
+
+    scaled_hp = enemy_data["hp"] + (level_bonus * 4)
+    scaled_attack = enemy_data["attack"] + (level_bonus * 2)
+    scaled_speed = enemy_data["speed"] + (level_bonus // 3)
+    scaled_armor = enemy_data["armor"] + (level_bonus // 2)
+
+    scaled_xp = enemy_data["xp_reward"] + (level_bonus * 3)
+    scaled_gold = enemy_data["gold_reward"] + (level_bonus * 2)
+
     return Enemy(
         enemy_name.capitalize(),
-        enemy_data["hp"],
-        enemy_data["attack"],
-        enemy_data["speed"],
-        enemy_data["armor"],
+        scaled_hp,
+        scaled_attack,
+        scaled_speed,
+        scaled_armor,
         enemy_data["moves"],
-        enemy_data["xp_reward"],
-        enemy_data["gold_reward"]
+        scaled_xp,
+        scaled_gold
     )
 
 def combat_encounter(player, log):
-    enemy = generate_enemy()
+    enemy = generate_enemy(player)
     log(f"A {enemy.name} appears!")
     log("-" * WIDTH)
     if enemy.speed > player.speed:
@@ -88,7 +99,7 @@ def handle_move(user, other, move_id, log, tag="normal"):
         elif effect["type"] == "heal":
             heal_amount = effect["value"]
             target.hp = min(target.max_hp, target.hp + heal_amount)
-            log(f"{user.name} used {move['name']} and healed {heal_amount} HP.")
+            log(f"{user.name} used {move['name']} and healed {heal_amount} HP.", tag)
 
         elif effect["type"] == "buff":
             stat_name = effect["stat"]
@@ -97,13 +108,13 @@ def handle_move(user, other, move_id, log, tag="normal"):
             current_value = getattr(target, stat_name)
             setattr(target, stat_name, current_value + buff_value)
 
-            log(f"{user.name}'s {stat_name} increased by {buff_value}.")
+            log(f"{user.name}'s {stat_name} increased by {buff_value}.", tag)
 
         elif effect["type"] == "status":
             if effect["target"] == "enemy":
-                apply_status(other, effect, log)
+                apply_status(other, effect, log, tag)
             elif effect["target"] == "self":
-                apply_status(user, effect, log)
+                apply_status(user, effect, log, tag)
 
         elif effect["type"] == "drain":
             damage = round(user.attack * effect["multiplier"])
@@ -112,7 +123,7 @@ def handle_move(user, other, move_id, log, tag="normal"):
             heal_amount = round(actual_damage * effect["heal_percent"])
             user.hp = min(user.max_hp, user.hp + heal_amount)
 
-            log(f"{user.name} used {move['name']}, dealt {actual_damage} damage, and healed {heal_amount} HP.")
+            log(f"{user.name} used {move['name']}, dealt {actual_damage} damage, and healed {heal_amount} HP.", tag)
 
 
     if not other.is_alive():
@@ -129,24 +140,24 @@ def handle_move(user, other, move_id, log, tag="normal"):
         return "enemy_dead"
 
     if not user.is_alive():
-        log(f"{user.name} has fallen...")
+        log(f"{user.name} has fallen...", "player")
         return "player_dead"
     
 
     return "continue"
         
-def enemy_turn(player, enemy, log):
+def enemy_turn(player, enemy, log, tag="enemy"):
     user = enemy
     other = player
 
-    stunned = process_status_start_turn(enemy, log)
+    stunned = process_status_start_turn(enemy, log, tag)
 
     if not enemy.is_alive():
         log(f"{enemy.name} has been defeated!")
         return "enemy_dead"
 
     if stunned:
-        update_status_durations(enemy, log)
+        update_status_durations(enemy, log, tag)
         return "enemy_skipped"
 
     attack_moves = []
@@ -175,13 +186,13 @@ def enemy_turn(player, enemy, log):
     elif other_moves:
         chosen_move = random.choice(other_moves)
     else:
-        log(f"{enemy.name} has no moves!")
+        log(f"{enemy.name} has no moves!", tag)
         return "continue"
 
-    result = handle_move(user, other, chosen_move, log, "enemy")
+    result = handle_move(user, other, chosen_move, log, tag)
 
     if result in ["enemy_dead", "player_dead"]:
         return result
 
-    update_status_durations(enemy, log)
+    update_status_durations(enemy, log, tag)
     return result

@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import ttk
 from combat import combat_encounter, handle_potion, handle_run, get_move, handle_move, enemy_turn
 from status_effects import process_status_start_turn, update_status_durations
 
@@ -27,7 +28,7 @@ def start_gui(player, enemy):
     root.title("Text RPG")
 
     root.geometry("900x600")
-    root.minsize(700, 500)
+    root.minsize(800, 650)
 
     top_frame = tk.Frame(root, bg=BG_MAIN, padx=15, pady=15)
     top_frame.pack(fill="x")
@@ -52,6 +53,21 @@ def start_gui(player, enemy):
     player_stats_label = tk.Label(top_frame, text="", bg=BG_PANEL, fg=TEXT_MAIN, highlightthickness=1, highlightbackground=BORDER, font=("Arial", 12), justify="left", anchor="w", padx=12, pady=12, width=20)
     player_stats_label.grid(row=0, column=0, sticky="w", padx=(10, 0))
 
+    xp_frame = tk.Frame(top_frame, bg=BG_MAIN)
+    xp_frame.grid(row=1, column=0, sticky="w", padx=(10, 0), pady=(8, 0))
+
+    level_label = tk.Label(xp_frame, text=f"Level: {player.level}", bg=BG_MAIN, fg=TEXT_MAIN, font=("Arial", 11, "bold"))
+    level_label.pack(anchor="w")
+
+    xp_label = tk.Label(xp_frame, text=f"XP:{player.xp}/{player.xp_to_next}", bg=BG_MAIN, fg=TEXT_MAIN, font=("Arial", 10))
+    xp_label.pack(anchor="w")
+
+    xp_left_label = tk.Label(xp_frame, text = f"{player.xp_to_next} XP until next level", bg=BG_MAIN, fg=TEXT_SECONDARY, font=("Arial", 10))
+    xp_left_label.pack(anchor="w")
+
+    xp_bar = ttk.Progressbar(xp_frame, orient="horizontal", length=220, mode="determinate", maximum=player.xp_to_next)
+    xp_bar.pack(anchor="w", pady=(6,0))
+
     enemy_stats_label = tk.Label(top_frame, text="", bg=BG_PANEL, fg=TEXT_MAIN, highlightthickness=1, highlightbackground=BORDER, font=("Arial", 12), justify="left", anchor="w", padx=12, pady=12, width=20)
     enemy_stats_label.grid(row=0, column=2, padx=20)
 
@@ -70,9 +86,9 @@ def start_gui(player, enemy):
             relief="flat",
             bd=0,
             font=("Arial", 12, "bold"),
-            padx=18,
-            pady=14,
-            width=20
+            padx=14,
+            pady=4,
+            width=16
         )
 
     def refresh_stats():
@@ -90,6 +106,16 @@ def start_gui(player, enemy):
             enemy_stats_label.grid(row=0, column=2, sticky="e", padx=10)
         else:
             enemy_stats_label.grid_remove()
+
+    def refresh_xp():
+        xp_bar["maximum"] = player.xp_to_next
+        xp_bar["value"] = player.xp
+
+        level_label.config(text=f"Level: {player.level}")
+        xp_label.config(text=f"XP: {player.xp} / {player.xp_to_next}")
+
+        remaining = player.xp_to_next - player.xp
+        xp_left_label.config(text=f"{remaining} XP until next level")
 
     def log(message, tag="normal"):
         text_box.config(state="normal")
@@ -176,15 +202,15 @@ def start_gui(player, enemy):
     #combat helpers
     
     def begin_player_turn():
-        stunned = process_status_start_turn(player, log)
+        stunned = process_status_start_turn(player, log, tag="player")
         refresh_stats()
         if not player.is_alive():
             end_combat()
             return "player_dead"
         if stunned:
-            update_status_durations(player, log)
+            update_status_durations(player, log, tag="player")
             refresh_stats()
-            enemy_turn(player, current_enemy, log)
+            enemy_turn(player, current_enemy, log, tag="enemy")
             return "turn_skipped"
 
         return "continue"
@@ -196,27 +222,32 @@ def start_gui(player, enemy):
         user = player
         other = current_enemy
         result = handle_move(user, other, move_id, log, "player")
-        update_status_durations(player, log)
+        update_status_durations(player, log, tag="player")
         refresh_stats()
         if result in ["enemy_dead", "player_dead"]:
+            refresh_xp()
             end_combat()
         else:
-            enemy_turn(player, current_enemy, log)
+            refresh_xp()
+            enemy_turn(player, current_enemy, log, tag="enemy")
 
     def on_heal():
         result = handle_potion(player, current_enemy, log)
-        update_status_durations(player, log)
+        update_status_durations(player, log, tag="player")
         refresh_stats()
         if result in ["enemy_dead", "player_dead"]:
+            refresh_xp()
             end_combat()
         else:
-            enemy_turn(player, current_enemy, log)
+            refresh_xp()
+            enemy_turn(player, current_enemy, log, tag="enemy")
 
     def on_run():
         result = handle_run(player, current_enemy, log)
-        update_status_durations(player, log)
+        update_status_durations(player, log, tag="player")
         refresh_stats()
         if result in ["escaped", "player_dead"]:
+            refresh_xp()
             end_combat()
 
     render_buttons()

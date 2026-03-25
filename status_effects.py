@@ -1,10 +1,10 @@
 import random
 
-def apply_status(target, effect, log):
+def apply_status(target, effect, log, tag="normal"):
     chance = effect.get("chance", 1.0)
 
     if random.random() > chance:
-        log(f"{target.name} resisted {effect['effect']}!")
+        log(f"{target.name} resisted {effect['effect']}!", tag)
         return False
 
     status_name = effect["effect"]
@@ -16,7 +16,7 @@ def apply_status(target, effect, log):
             status["duration"] = duration
             if "value" in effect:
                 status["value"] = effect["value"]
-            log(f"{target.name}'s {status_name} was refreshed.")
+            log(f"{target.name}'s {status_name} was refreshed.", tag)
             return True
 
     new_status = {
@@ -30,13 +30,13 @@ def apply_status(target, effect, log):
     target.status_effects.append(new_status)
 
     if status_name == "poison":
-        log(f"{target.name} was poisoned for {duration} turns!")
+        log(f"{target.name} was poisoned for {duration} turns!", tag)
     elif status_name == "stun":
-        log(f"{target.name} was stunned!")
+        log(f"{target.name} was stunned!", tag)
 
     return True
 
-def process_status_start_turn(target, log):
+def process_status_start_turn(target, log, tag="normal"):
     stunned = False
 
     for status in target.status_effects:
@@ -45,15 +45,15 @@ def process_status_start_turn(target, log):
             target.hp -= damage
             if target.hp < 0:
                 target.hp = 0
-            log(f"{target.name} takes {damage} poison damage!")
+            log(f"{target.name} takes {damage} poison damage!", tag)
 
         elif status["name"] == "stun":
             stunned = True
-            log(f"{target.name} is stunned and cannot act!")
+            log(f"{target.name} is stunned and cannot act!", tag)
 
     return stunned
 
-def update_status_durations(target, log):
+def update_status_durations(target, log, tag="normal"):
     expired = []
 
     for status in target.status_effects:
@@ -63,4 +63,4 @@ def update_status_durations(target, log):
 
     for status in expired:
         target.status_effects.remove(status)
-        log(f"{status['name'].capitalize()} wore off of {target.name}.")
+        log(f"{status['name'].capitalize()} wore off of {target.name}.", tag)
