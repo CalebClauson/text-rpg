@@ -6,13 +6,13 @@ WIP - Currently in active development
 
 This is a text based RPG I developed using Python and Tkinter as I continue learning how to build more structured and interactive applications.
 
-The game uses a graphical interface for exploration and turn based combat while relying on JSON files to store game data such as enemies, items, moves, and player save data.
+The game uses a graphical interface for turn based combat while relying on JSON files to store game data such as enemies, items, moves, and player save data.
 
 ## Purpose
 
 This project was created to move beyond basic scripts and start building a more complete application with multiple files, connected systems, and a GUI.
 
-It focuses on practicing game logic, state management, event driven programming, and external data handling while keeping the project organized and scalable as new systems are added.
+It focuses on practicing game logic, state management, event driven programming, and external data handling while keeping the project organized and easier to expand as new systems are added.
 
 ## Current Features
 
@@ -24,7 +24,7 @@ Combat actions such as attacking, healing, opening the backpack, and running are
 
 ## Move Based Combat
 
-The combat system now supports move selection through a dedicated attack panel.
+The combat system supports move selection through a dedicated attack panel.
 
 Moves are loaded from JSON and can have different behavior types such as:
 
@@ -33,11 +33,13 @@ Moves are loaded from JSON and can have different behavior types such as:
 - buff
 - status
 
-This allows combat to be expanded without hardcoding every move directly into the interface.
+This allows combat to expand without hardcoding every move directly into the interface.
 
 ## Enemy Generation
 
 Enemies are dynamically generated from a JSON file, allowing new enemies to be added or balanced without changing the core combat code.
+
+Enemy stats can also scale based on the player level, which helps combat feel more progressive.
 
 Example enemies include:
 
@@ -49,7 +51,7 @@ Example enemies include:
 
 ## Reward System
 
-Enemies can now grant rewards after battle, including:
+Enemies can grant rewards after battle, including:
 
 - experience points
 - gold
@@ -58,7 +60,7 @@ This creates a progression loop where defeating enemies helps the player grow st
 
 ## Level System
 
-The player now has a level based progression system tied to experience gained from combat.
+The player has a level based progression system tied to experience gained from combat.
 
 Player stats such as health and attack can increase on level up, allowing future encounters to scale with progression.
 
@@ -78,6 +80,12 @@ Example items include:
 Items such as healing potions can be used during combat to restore health.
 
 The item system is structured so additional item effects can be added later through JSON driven design.
+
+## Status Effects
+
+The combat system includes status effect support.
+
+Status effects can be applied, processed at the start of turns, and updated over time, which helps make battles more varied and gives move design more flexibility.
 
 ## Save and Load System
 
@@ -114,11 +122,11 @@ The project is split across multiple files to separate responsibilities more cle
 Examples include:
 
 - `gui.py` for interface behavior
-- `combat.py` for battle flow and combat logic
+- `systems/combat.py` for battle flow and combat logic
+- `systems/enemy.py` for enemy behavior and stats
+- `systems/status_effects.py` for status effect handling
 - `player.py` for player data and progression
-- `enemy.py` for enemy behavior and stats
 - `save_load.py` for save and load handling
-- `story.py` for encounter and story related flow
 
 ## What I Learned
 
@@ -142,4 +150,4 @@ load → modify → save
 
 This project is still a work in progress and not all systems are fully complete or polished yet.
 
-The main focus right now is improving combat flow, move effects, progression systems, and overall stability as the project continues to grow.
+The main focus right now is improving combat flow, move effects, progression systems, status effect handling, and overall stability as the project continues to grow.
