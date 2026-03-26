@@ -1,8 +1,8 @@
-from enemy import Enemy
+from .enemy import Enemy
 from player import Player
 import json
 import random
-from status_effects import apply_status, process_status_start_turn, update_status_durations
+from .status_effects import apply_status, process_status_start_turn, update_status_durations
 
 with open("assets/moves.json", "r") as f:
     MOVES = json.load(f)

@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
-from combat import combat_encounter, handle_potion, handle_run, get_move, handle_move, enemy_turn
-from status_effects import process_status_start_turn, update_status_durations
+from systems.combat import combat_encounter, handle_potion, handle_run, get_move, handle_move, enemy_turn
+from systems.status_effects import process_status_start_turn, update_status_durations
 
 BG_MAIN = "#1e1e1e"       # main window background
 BG_PANEL = "#2a2a2a"      # frames / panels
