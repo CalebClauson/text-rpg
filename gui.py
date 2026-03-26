@@ -3,8 +3,7 @@ from tkinter import ttk
 
 from player import Player
 from systems.combat import combat_encounter, process_victory, resolve_player_turn, get_move
-from save_load import load_player, save_player
-
+from save_load import load_player, save_player, delete_player_save
 BG_MAIN = "#1e1e1e"
 BG_PANEL = "#2a2a2a"
 BG_WIDGET = "#3a3a3a"
@@ -25,6 +24,7 @@ def start_gui(player):
     current_enemy = None
     game_state = "menu"
 
+    dead_player_name = ""
     player_stats_label = None
     level_label = None
     xp_label = None
@@ -47,7 +47,7 @@ def start_gui(player):
     root.configure(bg=BG_MAIN)
 
     top_frame = tk.Frame(root, bg=BG_MAIN, padx=15, pady=15)
-    top_frame.pack(fill="x")
+    top_frame.pack_forget()
 
     middle_frame = tk.Frame(root, bg=BG_PANEL, padx=15, pady=15)
     middle_frame.pack(fill="both", expand=True)
@@ -81,8 +81,14 @@ def start_gui(player):
         text_box.config(state="disabled")
 
     # stats / ui
+    def show_top_frame():
+        if not top_frame.winfo_ismapped():
+            top_frame.pack(fill="x", before=middle_frame)
+
     def build_stats_ui():
         nonlocal player_stats_label, level_label, xp_label, xp_left_label, xp_bar, enemy_stats_label
+
+        show_top_frame()
 
         if player_stats_label is not None:
             return
@@ -134,10 +140,12 @@ def start_gui(player):
             enemy_stats_label.grid_remove()
 
     def back_to_menu():
-        nonlocal game_state, current_enemy
+        nonlocal game_state, current_enemy, player
         game_state = "menu"
         current_enemy = None
+        player = None
         text_box.pack_forget()
+        top_frame.pack_forget()
         render_buttons()
 
     #character creator helpers
@@ -200,6 +208,8 @@ def start_gui(player):
         temp_attack = 10
         temp_speed = 5
         temp_armor = 0
+        text_box.pack_forget()
+        top_frame.pack_forget()
         render_buttons()
 
     def load_game():
@@ -207,8 +217,6 @@ def start_gui(player):
         loaded_player = load_player()
 
         if not loaded_player:
-            show_text_box()
-            log("No save file was found.", tag="warn")
             return
 
         player = loaded_player
@@ -249,13 +257,17 @@ def start_gui(player):
 
     def start_combat():
         nonlocal game_state, current_enemy
+
         current_enemy, result = combat_encounter(player, log)
+
+        if result == "player_dead":
+            handle_player_death()
+            return
+
         game_state = "combat"
         refresh_stats()
         refresh_xp()
         render_buttons()
-        if result == "player_dead":
-            handle_player_death()
 
     def end_combat():
         enter_hub()
@@ -311,11 +323,15 @@ def start_gui(player):
         handle_turn_result(result)
 
     def handle_player_death():
-        nonlocal current_enemy, game_state
+        nonlocal current_enemy, game_state, player, dead_player_name
 
+        dead_player_name = player.name
+        log(f"{dead_player_name} has fallen. Run over.", tag="warn")
+        delete_player_save()
         current_enemy = None
         game_state = "game_over"
-        log(f"{player.name} has fallen. Run over.", tag="warn")
+        text_box.pack_forget()
+        player = None
         refresh_stats()
         refresh_xp()
         render_buttons()
@@ -455,7 +471,7 @@ def start_gui(player):
             title_label = tk.Label(gameover_frame, text="Game Over", bg=BG_PANEL, fg=ACCENT_RED, font=("Arial", 24, "bold"))
             title_label.grid(row=0, column=0, columnspan=2, pady=(0, 16))
 
-            subtitle_label = tk.Label(gameover_frame, text=f"{player.name} has fallen.", bg=BG_PANEL, fg=TEXT_SECONDARY, font=("Arial", 11))
+            subtitle_label = tk.Label(gameover_frame, text=f"{dead_player_name} has fallen.", bg=BG_PANEL, fg=TEXT_SECONDARY, font=("Arial", 11))
             subtitle_label.grid(row=1, column=0, columnspan=2, pady=(0, 18))
 
             btn1 = make_button(gameover_frame, "Return to Menu", back_to_menu, bg=ACCENT_GOLD)

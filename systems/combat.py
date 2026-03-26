@@ -41,7 +41,6 @@ def generate_enemy(player):
         scaled_gold
     )
 
-
 def combat_encounter(player, log):
     enemy = generate_enemy(player)
     log(f"A {enemy.name} appears!")
@@ -54,22 +53,18 @@ def combat_encounter(player, log):
 
     return enemy, "continue"
 
-
 def get_move(move_id):
     return MOVES[move_id]
-
 
 def handle_potion(player, enemy, log):
     player.use_item("potion", log)
     return "continue"
-
 
 def handle_run(player, enemy, log):
     success = player.run(enemy, log)
     if success:
         return "escaped"
     return "continue"
-
 
 def handle_move(user, other, move_id, log, tag="normal"):
     move = get_move(move_id)
@@ -118,17 +113,24 @@ def handle_move(user, other, move_id, log, tag="normal"):
             log(f"{user.name} used {move['name']}, dealt {actual_damage} damage, and healed {heal_amount} HP.", tag)
 
     if not other.is_alive():
-        log(f"{other.name} has been defeated!")
-        user.reset_combat_stats()
-        other.reset_combat_stats()
-        return "enemy_dead"
+        if isinstance(other, Player):
+            log(f"{other.name} has fallen.", tag)
+            return "player_dead"
+        else:
+            log(f"{other.name} has been defeated!")
+            user.reset_combat_stats()
+            other.reset_combat_stats()
+            return "enemy_dead"
 
     if not user.is_alive():
-        log(f"{user.name} has fallen.", tag)
-        return "player_dead"
+        if isinstance(user, Player):
+            log(f"{user.name} has fallen.", tag)
+            return "player_dead"
+        else:
+            log(f"{user.name} has been defeated!")
+            return "enemy_dead"
 
     return "continue"
-
 
 def enemy_turn(player, enemy, log, tag="enemy"):
     user = enemy
@@ -180,13 +182,11 @@ def enemy_turn(player, enemy, log, tag="enemy"):
     update_status_durations(enemy, log, tag)
     return result
 
-
 def process_victory(player, enemy, log):
     player.gold += enemy.gold_reward
     log(f"{player.name} gained {enemy.gold_reward} gold!")
     log(f"{player.name} gained {enemy.xp_reward} experience!")
     return player.gain_xp(enemy.xp_reward, log, "player")
-
 
 def resolve_player_turn(player, enemy, action, log, move_id=None):
     stunned = process_status_start_turn(player, log, tag="player")

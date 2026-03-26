@@ -1,5 +1,6 @@
 import json
 from player import Player
+import os
 
 def new_player(name):
     return Player(
@@ -40,19 +41,7 @@ def load_player():
         return player
 
     except FileNotFoundError:
-        return Player(
-            "Hero",
-            100,          # hp
-            10,           # attack
-            5,            # speed
-            0,            # armor
-            ["slash"],    # moves
-            [],           # inventory
-            0,            # gold
-            1,            # level
-            0,            # xp
-            25            # xp_to_next
-        )
+        return None
 
 def save_player(player):
     data = {
@@ -72,3 +61,7 @@ def save_player(player):
 
     with open("assets/player.json", "w") as f:
         json.dump(data, f, indent=2)
+
+def delete_player_save():
+    if os.path.exists("assets/player.json"):
+        os.remove("assets/player.json")

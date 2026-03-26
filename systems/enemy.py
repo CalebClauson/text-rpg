@@ -22,6 +22,8 @@ class Enemy:
     def take_damage(self, damage):
         reduced = round(damage * (100 / (100 + self.armor)))
         self.hp -= reduced
+        if self.hp < 0:
+            self.hp = 0
         return reduced
 
     def attack_player(self, player, log):
