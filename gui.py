@@ -2,8 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from player import Player
-from systems.combat import combat_encounter, handle_potion, handle_run, get_move, handle_move, enemy_turn
-from systems.status_effects import process_status_start_turn, update_status_durations
+from systems.combat import combat_encounter, process_victory, resolve_player_turn, get_move
 from save_load import load_player, save_player
 
 BG_MAIN = "#1e1e1e"
@@ -22,8 +21,7 @@ ACCENT_GOLD = "#d4a017"
 BORDER = "#555555"
 
 
-def start_gui(player, enemy):
-    player = None
+def start_gui(player):
     current_enemy = None
     game_state = "menu"
 
@@ -36,7 +34,7 @@ def start_gui(player, enemy):
     pending_move_choices = []
     name_entry = None
 
-    temp_name= ""
+    temp_name = ""
     stat_points = 3
     temp_attack = 10
     temp_speed = 5
@@ -77,13 +75,12 @@ def start_gui(player, enemy):
 
     def show_text_box():
         if not text_box.winfo_ismapped():
-            text_box.pack(expand=True, fill="both")
+            text_box.pack(fill="x", pady=10)
         text_box.config(state="normal")
         text_box.delete("1.0", tk.END)
         text_box.config(state="disabled")
 
-
-#stats / ui
+    # stats / ui
     def build_stats_ui():
         nonlocal player_stats_label, level_label, xp_label, xp_left_label, xp_bar, enemy_stats_label
 
@@ -136,13 +133,14 @@ def start_gui(player, enemy):
         else:
             enemy_stats_label.grid_remove()
 
-
-#menu loaders / char creation
     def back_to_menu():
-        nonlocal game_state
+        nonlocal game_state, current_enemy
         game_state = "menu"
+        current_enemy = None
+        text_box.pack_forget()
         render_buttons()
 
+    #character creator helpers
     def add_stat(stat_name):
         nonlocal stat_points, temp_attack, temp_speed, temp_armor, temp_name
 
@@ -206,7 +204,14 @@ def start_gui(player, enemy):
 
     def load_game():
         nonlocal player
-        player = load_player()
+        loaded_player = load_player()
+
+        if not loaded_player:
+            show_text_box()
+            log("No save file was found.", tag="warn")
+            return
+
+        player = loaded_player
         build_stats_ui()
         show_text_box()
         refresh_stats()
@@ -221,8 +226,7 @@ def start_gui(player, enemy):
         refresh_stats()
         render_buttons()
 
-
-#level up helpers
+    #combat helpers
     def level_up(move_choices):
         nonlocal game_state, current_enemy, pending_move_choices
         pending_move_choices = move_choices
@@ -235,26 +239,29 @@ def start_gui(player, enemy):
         render_buttons()
 
     def learn_move(move_id):
-        if not player.learn_move(move_id):
-            if len(player.moves) >= 4:
-                player.moves[-1] = move_id
+        if len(player.moves) < 4:
+            player.learn_move(move_id)
+        else:
+            player.moves[-1] = move_id
 
         save_player(player)
         enter_hub()
 
-#combat helpers
     def start_combat():
         nonlocal game_state, current_enemy
-        current_enemy = combat_encounter(player, log)
+        current_enemy, result = combat_encounter(player, log)
         game_state = "combat"
         refresh_stats()
+        refresh_xp()
         render_buttons()
+        if result == "player_dead":
+            handle_player_death()
 
     def end_combat():
         enter_hub()
 
     def handle_post_combat():
-        move_choices = player.gain_xp(current_enemy.xp_reward, log, "player")
+        move_choices = process_victory(player, current_enemy, log)
         refresh_stats()
         refresh_xp()
 
@@ -273,94 +280,45 @@ def start_gui(player, enemy):
         game_state = "combat"
         render_buttons()
 
-    def begin_player_turn():
-        stunned = process_status_start_turn(player, log, tag="player")
+    def handle_turn_result(result):
         refresh_stats()
-
-        if not player.is_alive():
-            end_combat()
-            return "player_dead"
-
-        if stunned:
-            update_status_durations(player, log, tag="player")
-            refresh_stats()
-            enemy_result = enemy_turn(player, current_enemy, log, tag="enemy")
-            refresh_stats()
-
-            if enemy_result == "player_dead":
-                end_combat()
-
-            return "turn_skipped"
-
-        return "continue"
-
-    def on_attack(move_id):
-        start_result = begin_player_turn()
-        if start_result in ["player_dead", "turn_skipped"]:
-            return
-
-        result = handle_move(player, current_enemy, move_id, log, "player")
-        update_status_durations(player, log, tag="player")
-        refresh_stats()
+        refresh_xp()
 
         if result == "enemy_dead":
             handle_post_combat()
-        elif result == "player_dead":
-            end_combat()
-        else:
-            enemy_result = enemy_turn(player, current_enemy, log, tag="enemy")
-            refresh_stats()
-            refresh_xp()
-
-            if enemy_result == "player_dead":
-                end_combat()
-            elif enemy_result == "enemy_dead":
-                handle_post_combat()
-
-    def on_heal():
-        start_result = begin_player_turn()
-        if start_result in ["player_dead", "turn_skipped"]:
             return
 
-        result = handle_potion(player, current_enemy, log)
-        update_status_durations(player, log, tag="player")
-        refresh_stats()
-
-        if result == "enemy_dead":
-            handle_post_combat()
-        elif result == "player_dead":
-            end_combat()
-        else:
-            enemy_result = enemy_turn(player, current_enemy, log, tag="enemy")
-            refresh_stats()
-            refresh_xp()
-
-            if enemy_result == "player_dead":
-                end_combat()
-            elif enemy_result == "enemy_dead":
-                handle_post_combat()
-
-    def on_run():
-        start_result = begin_player_turn()
-        if start_result in ["player_dead", "turn_skipped"]:
+        if result == "player_dead":
+            handle_player_death()
             return
-
-        result = handle_run(player, current_enemy, log)
-        update_status_durations(player, log, tag="player")
-        refresh_stats()
 
         if result == "escaped":
             end_combat()
-        elif result == "player_dead":
-            end_combat()
-        else:
-            enemy_result = enemy_turn(player, current_enemy, log, tag="enemy")
-            refresh_stats()
+            return
 
-            if enemy_result == "player_dead":
-                end_combat()
-            elif enemy_result == "enemy_dead":
-                handle_post_combat()
+        render_buttons()
+
+    def on_attack(move_id):
+        result = resolve_player_turn(player, current_enemy, "attack", log, move_id)
+        handle_turn_result(result)
+
+    def on_heal():
+        result = resolve_player_turn(player, current_enemy, "heal", log)
+        handle_turn_result(result)
+
+    def on_run():
+        result = resolve_player_turn(player, current_enemy, "run", log)
+        handle_turn_result(result)
+
+    def handle_player_death():
+        nonlocal current_enemy, game_state
+
+        current_enemy = None
+        game_state = "game_over"
+        log(f"{player.name} has fallen. Run over.", tag="warn")
+        refresh_stats()
+        refresh_xp()
+        render_buttons()
 
     def clear_menu_area():
         for widget in bottom_frame.winfo_children():
@@ -489,6 +447,25 @@ def start_gui(player, enemy):
                 move = get_move(move_id)
                 btn = make_button(bottom_frame, move["name"], lambda m_id=move_id: learn_move(m_id), bg=ACCENT_GOLD)
                 btn.grid(row=0, column=i, padx=8, pady=8, sticky="ew")
+
+        elif game_state == "game_over":
+            gameover_frame = tk.Frame(middle_frame, bg=BG_PANEL, padx=36, pady=32)
+            gameover_frame.place(relx=0.5, rely=0.5, anchor="center")
+
+            title_label = tk.Label(gameover_frame, text="Game Over", bg=BG_PANEL, fg=ACCENT_RED, font=("Arial", 24, "bold"))
+            title_label.grid(row=0, column=0, columnspan=2, pady=(0, 16))
+
+            subtitle_label = tk.Label(gameover_frame, text=f"{player.name} has fallen.", bg=BG_PANEL, fg=TEXT_SECONDARY, font=("Arial", 11))
+            subtitle_label.grid(row=1, column=0, columnspan=2, pady=(0, 18))
+
+            btn1 = make_button(gameover_frame, "Return to Menu", back_to_menu, bg=ACCENT_GOLD)
+            btn2 = make_button(gameover_frame, "Quit", root.destroy, bg=ACCENT_RED)
+
+            btn1.grid(row=2, column=0, padx=10, pady=8, sticky="ew")
+            btn2.grid(row=2, column=1, padx=10, pady=8, sticky="ew")
+
+            gameover_frame.grid_columnconfigure(0, weight=1, minsize=180)
+            gameover_frame.grid_columnconfigure(1, weight=1, minsize=180)
 
     render_buttons()
     root.mainloop()

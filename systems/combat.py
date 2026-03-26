@@ -14,10 +14,13 @@ def generate_enemy(player):
     with open("assets/enemies.json", "r") as f:
         enemies_data = json.load(f)
 
-    enemy_name = random.choice(list(enemies_data.keys()))
+    enemy_names = list(enemies_data.keys())
+    weights = [enemies_data[name].get("weight", 1) for name in enemy_names]
+
+    enemy_name = random.choices(enemy_names, weights=weights, k=1)[0]
     enemy_data = enemies_data[enemy_name]
 
-    level_bonus = max(0, player.level - 1)
+    level_bonus = player.level - 1
 
     scaled_hp = enemy_data["hp"] + (level_bonus * 4)
     scaled_attack = enemy_data["attack"] + (level_bonus * 2)
@@ -38,42 +41,35 @@ def generate_enemy(player):
         scaled_gold
     )
 
+
 def combat_encounter(player, log):
     enemy = generate_enemy(player)
     log(f"A {enemy.name} appears!")
     log("-" * WIDTH)
+
     if enemy.speed > player.speed:
-        log(f"{enemy.name} outsped {player.name}....", "enemy")
-        enemy_turn(player, enemy, log)
-    return enemy
+        log(f"{enemy.name} outsped {player.name}.", "enemy")
+        result = enemy_turn(player, enemy, log, tag="enemy")
+        return enemy, result
+
+    return enemy, "continue"
+
 
 def get_move(move_id):
     return MOVES[move_id]
 
+
 def handle_potion(player, enemy, log):
     player.use_item("potion", log)
-
-    enemy.attack_player(player, log)
-
-    if not player.is_alive():
-        log(f"{player.name} has fallen...", "enemy")
-        return "player_dead"
-
     return "continue"
 
-def handle_run(player, enemy,log):
-    success = player.run(enemy, log)
 
+def handle_run(player, enemy, log):
+    success = player.run(enemy, log)
     if success:
         return "escaped"
-
-    enemy_turn(player, enemy, log)
-
-    if not player.is_alive():
-        log(f"{player.name} has fallen...", "enemy")
-        return "player_dead"
-
     return "continue"
+
 
 def handle_move(user, other, move_id, log, tag="normal"):
     move = get_move(move_id)
@@ -104,10 +100,8 @@ def handle_move(user, other, move_id, log, tag="normal"):
         elif effect["type"] == "buff":
             stat_name = effect["stat"]
             buff_value = effect["value"]
-
             current_value = getattr(target, stat_name)
             setattr(target, stat_name, current_value + buff_value)
-
             log(f"{user.name}'s {stat_name} increased by {buff_value}.", tag)
 
         elif effect["type"] == "status":
@@ -119,33 +113,23 @@ def handle_move(user, other, move_id, log, tag="normal"):
         elif effect["type"] == "drain":
             damage = round(user.attack * effect["multiplier"])
             actual_damage = target.take_damage(damage)
-
             heal_amount = round(actual_damage * effect["heal_percent"])
             user.hp = min(user.max_hp, user.hp + heal_amount)
-
             log(f"{user.name} used {move['name']}, dealt {actual_damage} damage, and healed {heal_amount} HP.", tag)
-
 
     if not other.is_alive():
         log(f"{other.name} has been defeated!")
-
-        if hasattr(other, "xp_reward") and hasattr(other, "gold_reward"):
-            user.gain_xp(other.xp_reward, log)
-            user.gold += other.gold_reward
-            log(f"{user.name} gained {other.gold_reward} gold!")
-            log(f"{user.name} gained {other.xp_reward} experience!")
-
         user.reset_combat_stats()
         other.reset_combat_stats()
         return "enemy_dead"
 
     if not user.is_alive():
-        log(f"{user.name} has fallen...", "player")
+        log(f"{user.name} has fallen.", tag)
         return "player_dead"
-    
 
     return "continue"
-        
+
+
 def enemy_turn(player, enemy, log, tag="enemy"):
     user = enemy
     other = player
@@ -166,7 +150,6 @@ def enemy_turn(player, enemy, log, tag="enemy"):
 
     for move_id in enemy.moves:
         move = get_move(move_id)
-
         if not move:
             continue
 
@@ -196,3 +179,37 @@ def enemy_turn(player, enemy, log, tag="enemy"):
 
     update_status_durations(enemy, log, tag)
     return result
+
+
+def process_victory(player, enemy, log):
+    player.gold += enemy.gold_reward
+    log(f"{player.name} gained {enemy.gold_reward} gold!")
+    log(f"{player.name} gained {enemy.xp_reward} experience!")
+    return player.gain_xp(enemy.xp_reward, log, "player")
+
+
+def resolve_player_turn(player, enemy, action, log, move_id=None):
+    stunned = process_status_start_turn(player, log, tag="player")
+
+    if not player.is_alive():
+        return "player_dead"
+
+    if stunned:
+        update_status_durations(player, log, tag="player")
+        return enemy_turn(player, enemy, log, tag="enemy")
+
+    if action == "attack":
+        result = handle_move(player, enemy, move_id, log, "player")
+    elif action == "heal":
+        result = handle_potion(player, enemy, log)
+    elif action == "run":
+        result = handle_run(player, enemy, log)
+    else:
+        return "continue"
+
+    update_status_durations(player, log, tag="player")
+
+    if result in ["enemy_dead", "player_dead", "escaped"]:
+        return result
+
+    return enemy_turn(player, enemy, log, tag="enemy")

@@ -1,19 +1,17 @@
 {
-  "name": "Hero",
-  "hp": 94,
-  "max_hp": 130,
-  "attack": 19,
+  "name": "Claws",
+  "hp": 35,
+  "max_hp": 120,
+  "attack": 17,
   "speed": 5,
   "armor": 0,
   "moves": [
     "slash",
-    "quick_jab",
-    "life_drain",
-    "stunning_blow"
+    "life_drain"
   ],
   "inventory": [],
-  "gold": 42,
-  "level": 4,
-  "xp": 52,
-  "xp_to_next": 115
+  "gold": 74,
+  "level": 3,
+  "xp": 67,
+  "xp_to_next": 75
 }
