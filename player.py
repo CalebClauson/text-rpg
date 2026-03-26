@@ -26,7 +26,7 @@ class Player:
         self.xp_to_next = xp_to_next
 
     @classmethod
-    def new_character(cls, name, attack=10, speed=5, armor=0):
+    def new_character(cls, name, attack=10, speed=5, armor=5):
         return cls(
             name=name,
             hp=100,

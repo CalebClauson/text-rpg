@@ -2,21 +2,6 @@ import json
 from player import Player
 import os
 
-def new_player(name):
-    return Player(
-        name,
-        100,
-        10,
-        5,
-        0,
-        ["slash"],
-        [],
-        0,
-        1,
-        0,
-        25
-    )
-
 def load_player():
     try:
         with open("assets/player.json", "r") as f:
@@ -27,7 +12,7 @@ def load_player():
             data["hp"],
             data["attack"],
             data.get("speed", 5),
-            data.get("armor", 0),
+            data.get("armor", 5),
             data.get("moves", ["slash"]),
             data.get("inventory", []),
             data.get("gold", 0),

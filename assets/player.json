@@ -1,16 +1,16 @@
 {
   "name": "Hero",
-  "hp": 95,
+  "hp": 100,
   "max_hp": 100,
   "attack": 13,
   "speed": 5,
-  "armor": 0,
+  "armor": 5,
   "moves": [
     "slash"
   ],
   "inventory": [],
-  "gold": 2,
+  "gold": 0,
   "level": 1,
-  "xp": 6,
+  "xp": 0,
   "xp_to_next": 25
 }

@@ -38,7 +38,7 @@ def start_gui(player):
     stat_points = 3
     temp_attack = 10
     temp_speed = 5
-    temp_armor = 0
+    temp_armor = 5
 
     root = tk.Tk()
     root.title("Text RPG")
@@ -207,7 +207,7 @@ def start_gui(player):
         stat_points = 3
         temp_attack = 10
         temp_speed = 5
-        temp_armor = 0
+        temp_armor = 5
         text_box.pack_forget()
         top_frame.pack_forget()
         render_buttons()
