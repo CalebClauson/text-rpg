@@ -1,19 +1,19 @@
 {
-  "name": "Caleb",
-  "hp": 100,
-  "max_hp": 100,
-  "attack": 50,
+  "name": "Hero",
+  "hp": 94,
+  "max_hp": 130,
+  "attack": 19,
   "speed": 5,
-  "armor": 10,
-  "level": 1,
-  "xp": 0,
-  "xp_to_next": 25,
+  "armor": 0,
   "moves": [
-    "poison_sting",
-    "heavy_strike",
+    "slash",
     "quick_jab",
-    "guard"
+    "life_drain",
+    "stunning_blow"
   ],
-  "inventory": ["potion", "sword"],
-  "gold": 50
+  "inventory": [],
+  "gold": 42,
+  "level": 4,
+  "xp": 52,
+  "xp_to_next": 115
 }

@@ -25,7 +25,8 @@ class Enemy:
         return reduced
 
     def attack_player(self, player, log):
-        player.take_damage(self.attack, self, log)
+        damage_done = player.take_damage(self.attack)
+        log(f"{self.name} dealt {damage_done} damage to {player.name}!")
 
     def drop_loot(self):
         return self.loot

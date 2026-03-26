@@ -4,6 +4,9 @@ import json
 with open("assets/items.json", "r") as f:
     ITEMS = json.load(f)
 
+with open("assets/moves.json", "r") as f:
+    MOVES = json.load(f)
+
 class Player:
     def __init__(self, name, hp, attack, speed, armor, moves, inventory, gold, level, xp, xp_to_next):
         self.name = name
@@ -21,6 +24,22 @@ class Player:
         self.level = level
         self.xp = xp
         self.xp_to_next = xp_to_next
+
+    @classmethod
+    def new_character(cls, name, attack=10, speed=5, armor=0):
+        return cls(
+            name=name,
+            hp=100,
+            attack=attack,
+            speed=speed,
+            armor=armor,
+            moves=["slash"],
+            inventory=[],
+            gold=0,
+            level=1,
+            xp=0,
+            xp_to_next=25
+        )
 
     def is_alive(self):
         return self.hp > 0
@@ -71,17 +90,39 @@ class Player:
             item = ITEMS[item_id]
             log(f"- {item['name']} x{count}")
 
-    def gain_xp(self, amount, log , tag="player"):
+    def get_level_up_moves(self, amount=2):
+        available_moves = [move_id for move_id in MOVES if move_id not in self.moves]
+        return random.sample(available_moves, min(amount, len(available_moves)))
+
+    def learn_move(self, move_id):
+        if move_id in self.moves:
+            return False
+
+        if len(self.moves) >= 4:
+            return False
+
+        self.moves.append(move_id)
+        return True
+
+    def gain_xp(self, amount, log, tag="player"):
         self.xp += amount
-        if self.xp >= self.xp_to_next:
+        all_move_choices = []
+
+        while self.xp >= self.xp_to_next:
+            self.xp -= self.xp_to_next
             self.level += 1
-            log(f"{self.name} has leveled up! Level {self.level}" ,tag)
+            log(f"{self.name} has leveled up! Level {self.level}", tag)
             self.base_attack += 2
             self.attack = self.base_attack
             self.max_hp += 10
             self.hp = self.max_hp
             self.xp_to_next = self.xp_to_next + (self.level * 10)
-            self.xp = 0
+
+            new_moves = self.get_level_up_moves()
+            if new_moves:
+                all_move_choices = new_moves
+
+        return all_move_choices
 
     def show_stats(self, log):
         log(f"Name: {self.name}")

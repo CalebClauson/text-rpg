@@ -1,6 +1,21 @@
 import json
 from player import Player
 
+def new_player(name):
+    return Player(
+        name,
+        100,
+        10,
+        5,
+        0,
+        ["slash"],
+        [],
+        0,
+        1,
+        0,
+        25
+    )
+
 def load_player():
     try:
         with open("assets/player.json", "r") as f:
