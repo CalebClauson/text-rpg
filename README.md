@@ -1,12 +1,12 @@
-## Text RPG (Python + Tkinter)
+# Text RPG (Python + Tkinter)
 
-WIP - Currently in active development
+A text-based RPG built with Python and Tkinter as I continue learning how to create more structured, interactive, and data-driven applications.
 
 ## Overview
 
-This is a text based RPG built with Python and Tkinter as I continue learning how to create more structured, interactive, and data driven applications.
+This project started as a simple combat idea and has gradually grown into a small multi-file RPG with a graphical interface, turn-based combat, progression systems, save/load support, and a more organized GUI-driven flow.
 
-The game uses a graphical interface for turn based combat and relies on JSON files for storing moves, enemies, items, and save data. The project has gradually grown from a simple combat idea into a small multi file RPG with progression, enemy generation, save/load support, and a cleaner GUI driven flow.
+The game uses JSON files for storing moves, enemies, items, and save data, which helps keep the project flexible and easier to expand.
 
 ## Purpose
 
@@ -16,19 +16,20 @@ It focuses on practicing:
 
 - game logic
 - state management
-- event driven programming
+- event-driven programming
 - GUI design with Tkinter
-- JSON based data handling
+- JSON-based data handling
 - debugging across multiple files
 - separating interface code from gameplay logic
+- refactoring as a project grows
 
-A major goal has been learning how to organize a project so it stays readable as more systems are added.
+A major goal has been learning how to organize a project so it stays readable and maintainable as more systems are added.
 
 ## Current Features
 
-## GUI Based Game Flow
+### GUI-Based Game Flow
 
-The game uses a Tkinter interface instead of the console, allowing the player to navigate the game through menus, buttons, and different game states.
+The game uses a Tkinter interface instead of the console, allowing the player to move through the game using menus, buttons, and different game states.
 
 Current GUI flow includes:
 
@@ -37,12 +38,13 @@ Current GUI flow includes:
 - combat screen
 - attack selection menu
 - hub screen between encounters
-- level up screen
-- game over screen
+- shop screen
+- level-up screen
+- game-over screen
 
-The GUI has been cleaned up so it handles interface flow while combat logic is increasingly handled in separate system files.
+The GUI has been cleaned up so it better handles screen transitions and overall interface flow while more gameplay logic is moved into separate system files.
 
-## Character Creation
+### Character Creation
 
 The game includes a character creation screen where the player can:
 
@@ -52,11 +54,11 @@ The game includes a character creation screen where the player can:
 - customize starting speed
 - customize starting armor
 
-This helps make the start of a run feel more interactive and gives the player some control over how their character begins.
+This makes the start of a run feel more interactive and gives the player control over their starting build.
 
-## Combat System
+### Combat System
 
-The core gameplay loop is built around turn based combat.
+The core gameplay loop is built around turn-based combat.
 
 Players can:
 
@@ -65,9 +67,9 @@ Players can:
 - check their backpack
 - attempt to run from combat
 
-Combat uses move data loaded from JSON, making it easier to expand behavior without hardcoding every move directly into the interface.
+Combat uses move data loaded from JSON, making it easier to expand move behavior without hardcoding everything directly into the interface.
 
-## Move Based Combat
+### Move-Based Combat
 
 Moves are selected through a dedicated attack menu and support multiple effect types.
 
@@ -79,31 +81,30 @@ Current supported move behavior includes:
 - drain
 - status effects
 
-This allows different moves to feel distinct while keeping the combat system data driven and easier to expand.
+This allows different moves to feel more distinct while keeping combat data-driven and easier to expand.
 
-## Status Effects
+### Status Effects
 
 The game supports status effects that can be applied and processed over time.
 
-Current status related systems include:
+Current status-related systems include:
 
 - applying status effects through moves
 - processing status effects at the start of turns
 - updating status durations during combat
 
-This gives combat more variety and adds flexibility for future move design.
+This adds more variety to combat and gives future move design more flexibility.
 
-## Enemy Generation
+### Enemy Generation
 
-Enemies are generated from JSON data rather than hardcoded directly in combat logic.
+Enemies are generated from JSON data rather than being hardcoded directly into combat logic.
 
 Current enemy generation supports:
 
 - loading enemies from JSON
 - scaling enemy stats by player level
+- scaling enemy gold rewards by player level
 - weighted enemy selection for encounter variety
-
-This makes balancing easier and allows new enemies to be added without major code changes.
 
 Example enemies include:
 
@@ -118,20 +119,22 @@ Example enemies include:
 - Zombie
 - Dragon
 
-## Reward and Progression System
+This makes balancing easier and allows new enemies to be added without major code changes.
 
-Defeating enemies grants rewards that feed directly into the game loop.
+### Reward and Progression System
+
+Defeating enemies grants rewards that feed directly into the gameplay loop.
 
 Current combat rewards include:
 
 - experience points
 - gold
 
-This creates a basic progression loop where combat leads to stronger characters and more move options over time.
+This creates a progression loop where combat leads to stronger characters, better rewards, and more options over time.
 
-## Level System
+### Level System
 
-The player has a level based progression system tied to earned experience.
+The player has a level-based progression system tied to earned experience.
 
 Leveling up currently includes:
 
@@ -140,9 +143,9 @@ Leveling up currently includes:
 - full heal on level up
 - increased XP requirement for future levels
 
-This helps the game feel more progressive and gives fights a sense of growth over time.
+This helps fights feel meaningful and gives the run a stronger sense of progression.
 
-## Level Up Move Choices
+### Level-Up Move Choices
 
 When the player levels up, the game can offer random move choices from the move pool.
 
@@ -153,13 +156,11 @@ This system currently supports:
 - learning new moves on level up
 - move cap handling in the GUI
 
-This was one of the bigger recent additions and helps the project feel more RPG like.
+This was one of the bigger additions and helps the project feel more RPG-like.
 
-## Inventory System
+### Inventory System
 
 The inventory stores item IDs tied to JSON item data.
-
-This keeps item handling simple while supporting future expansion.
 
 The system currently supports:
 
@@ -167,7 +168,22 @@ The system currently supports:
 - checking backpack contents
 - using healing items in combat
 
-## Save and Load System
+This keeps item handling simple while still supporting future expansion.
+
+### Shop System
+
+The game now includes a shop that gives the player another way to interact with progression between fights.
+
+The shop currently supports:
+
+- buying potions
+- buying stat upgrades
+- spending gold earned from combat
+- scaling costs based on player level
+
+This helps connect combat rewards to player progression and adds another decision point between encounters.
+
+### Save and Load System
 
 Player data is stored in JSON so progress can persist between sessions.
 
@@ -186,9 +202,9 @@ Current saved data includes:
 - xp
 - xp needed for next level
 
-The project also includes a start menu flow for loading an existing player or creating a new one.
+The project also includes a main menu flow for loading an existing player or creating a new one.
 
-## Data Driven Design
+### Data-Driven Design
 
 A major goal of the project is to separate data from logic wherever possible.
 
@@ -199,7 +215,7 @@ Game content is stored in JSON files, including:
 - items
 - player save data
 
-This makes the project easier to expand and helps keep balance changes separate from the main gameplay code.
+This makes the project easier to expand and helps keep balance changes separate from core gameplay code.
 
 ## Project Structure
 
@@ -207,24 +223,37 @@ The project is split across multiple files so responsibilities are separated mor
 
 Current structure includes files such as:
 
-- `gui.py` for menus, button rendering, and interface state flow
+- `gui.py` for menus, button rendering, interface state flow, and screen transitions
 - `systems/combat.py` for encounter flow, turn resolution, and combat helpers
 - `systems/enemy.py` for enemy behavior and stats
 - `systems/status_effects.py` for applying and updating statuses
 - `player.py` for player data, progression, inventory, and move learning
 - `save_load.py` for save and load handling
 
-This separation has helped clean up the GUI and move repeated combat logic into the combat system where it belongs.
+This separation has helped clean up the GUI and move repeated combat logic into dedicated systems where it belongs.
+
+## Recent Improvements
+
+Some of the more recent improvements to the project include:
+
+- cleaner GUI state handling
+- smoother transitions between menu, hub, shop, and combat
+- reduced Tkinter flicker during character creation
+- reduced shop flicker by updating values directly instead of rerendering the full screen
+- improved handling for returning from the shop back to the hub
+- continued cleanup of combat and interface responsibilities
+
+These updates helped the game feel more stable and made the UI behavior more consistent across systems.
 
 ## What I Learned
 
 This project has helped me practice:
 
-- structuring a multi file Python project
+- structuring a multi-file Python project
 - working with Tkinter for GUI development
-- managing game state in an event driven application
+- managing game state in an event-driven application
 - reading and writing JSON data
-- designing data driven combat systems
+- designing data-driven combat systems
 - separating UI logic from combat logic
 - building progression systems
 - debugging interactions across multiple files
@@ -244,12 +273,14 @@ The project is still a work in progress, but it now has a much more complete gam
 Current playable flow includes:
 
 - create or load a character
+- customize starting stats
 - enter combat
 - fight enemies through the GUI
 - gain gold and XP
 - level up
 - choose new moves
 - return to the hub
+- visit the shop
 - continue into the next encounter
 
 The current focus is less on adding huge new systems and more on:
