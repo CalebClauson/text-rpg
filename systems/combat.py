@@ -28,7 +28,7 @@ def generate_enemy(player):
     scaled_armor = enemy_data["armor"] + (level_bonus // 2)
 
     scaled_xp = enemy_data["xp_reward"] + (level_bonus * 3)
-    scaled_gold = enemy_data["gold_reward"] + (level_bonus * 2)
+    scaled_gold = enemy_data["gold_reward"] + (level_bonus * 3)
 
     return Enemy(
         enemy_name.capitalize(),
