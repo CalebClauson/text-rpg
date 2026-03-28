@@ -59,13 +59,11 @@ class Player:
          item = ITEMS[item_id]
 
          if item["type"] == "heal":
-             self.hp += item["value"]
+            heal_amount = item["value"] + ((self.level - 1) * 6)
+            self.hp = min(self.max_hp, self.hp + heal_amount)
 
-             if self.hp > self.max_hp:
-                 self.hp = self.max_hp
-
-             log(f"You used {item['name']} and healed {item['value']} HP!")
-             self.inventory.remove(item_id)
+            log(f"You used {item['name']} and healed {heal_amount} HP!")
+            self.inventory.remove(item_id)
 
     def run(self, enemy, log):
         chance = random.choice(["Success", "Fail"])
@@ -97,14 +95,11 @@ class Player:
         return random.sample(available_moves, min(amount, len(available_moves)))
 
     def learn_move(self, move_id):
-        if move_id in self.moves:
-            return False
+        if len(self.moves) < 4:
+            self.moves.append(move_id)
 
-        if len(self.moves) >= 4:
-            return False
-
-        self.moves.append(move_id)
-        return True
+    def replace_move(self, index, move_id):
+        self.moves[index] = move_id
 
     def gain_xp(self, amount, log, tag="player"):
         self.xp += amount

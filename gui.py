@@ -41,6 +41,8 @@ def start_gui(player):
     temp_attack = 10
     temp_speed = 5
     temp_armor = 5
+    
+    pending_new_move = None
 
     char_frame = None
     points_label = None
@@ -129,12 +131,9 @@ def start_gui(player):
 
     def build_stats_ui():
         nonlocal player_stats_label, level_label, xp_label, xp_left_label, xp_bar, enemy_stats_label
-
         show_top_frame()
-
         if player_stats_label is not None:
             return
-
         player_stats_label = tk.Label(
             top_frame,
             text="",
@@ -563,6 +562,34 @@ def start_gui(player):
         refresh_xp()
         render_buttons()
 
+    def replace_move(index):
+        nonlocal pending_new_move
+
+        player.moves[index] = pending_new_move
+        pending_new_move = None
+        save_player(player)
+        enter_hub()
+
+    def choose_levelup_move(move_id):
+        nonlocal pending_new_move, game_state
+
+        if len(player.moves) < 4:
+            player.learn_move(move_id)
+            save_player(player)
+            enter_hub()
+        else:
+            pending_new_move = move_id
+            game_state = "replace_move"
+            render_buttons()
+
+    def confirm_replace_move(index):
+        nonlocal pending_new_move
+
+        player.replace_move(index, pending_new_move)
+        pending_new_move = None
+        save_player(player)
+        enter_hub()
+
     def render_buttons():
         nonlocal gold_label
         clear_menu_area()
@@ -602,7 +629,7 @@ def start_gui(player):
 
         elif game_state == "combat":
             btn1 = make_button(bottom_frame, "Attack!", attack_ui, bg=ACCENT_BLUE)
-            btn2 = make_button(bottom_frame, "Heal", on_heal, bg=ACCENT_GREEN)
+            btn2 = make_button(bottom_frame, "Potion", on_heal, bg=ACCENT_GREEN)
             btn3 = make_button(bottom_frame, "Backpack", lambda: player.backpack(log), bg=BG_WIDGET)
             btn4 = make_button(bottom_frame, "Run!", on_run, bg=ACCENT_RED)
 
@@ -745,11 +772,32 @@ def start_gui(player):
                 btn = make_button(
                     bottom_frame,
                     move["name"],
-                    lambda m_id=move_id: learn_move(m_id),
+                    lambda m_id=move_id: choose_levelup_move(m_id),
                     bg=ACCENT_GOLD
                 )
                 btn.grid(row=0, column=i, padx=8, pady=8, sticky="ew")
 
+        elif game_state == "replace_move":
+            new_move = get_move(pending_new_move)
+
+            info_label = tk.Label(
+                middle_frame,
+                text=f"Choose a move to replace with {new_move['name']}",
+                bg=BG_PANEL,
+                fg=TEXT_MAIN,
+                font=("Arial", 16, "bold")
+            )
+            info_label.place(relx=0.5, rely=0.25, anchor="center")
+
+            for i, old_move_id in enumerate(player.moves):
+                old_move = get_move(old_move_id)
+                btn = make_button(
+                    bottom_frame,
+                    old_move["name"],
+                    lambda idx=i: confirm_replace_move(idx),
+                    bg=ACCENT_RED
+                )
+                btn.grid(row=i // 2, column=i % 2, padx=8, pady=8, sticky="ew")
         elif game_state == "game_over":
             gameover_frame = tk.Frame(middle_frame, bg=BG_PANEL, padx=36, pady=32)
             gameover_frame.place(relx=0.5, rely=0.5, anchor="center")
