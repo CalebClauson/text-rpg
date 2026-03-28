@@ -777,6 +777,14 @@ def start_gui(player):
                 )
                 btn.grid(row=0, column=i, padx=8, pady=8, sticky="ew")
 
+                skip_btn = make_button(
+                bottom_frame,
+                "Skip",
+                enter_hub,
+                bg=ACCENT_RED
+            )
+            skip_btn.grid(row=1, column=0, columnspan=len(pending_move_choices), padx=8, pady=8, sticky="ew")
+
         elif game_state == "replace_move":
             new_move = get_move(pending_new_move)
 

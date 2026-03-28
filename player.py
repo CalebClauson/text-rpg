@@ -15,6 +15,7 @@ class Player:
         self.attack = attack
         self.base_attack = attack
         self.speed = speed
+        self.base_speed = speed
         self.armor = armor
         self.base_armor = armor
         self.status_effects = []
@@ -109,8 +110,12 @@ class Player:
             self.xp -= self.xp_to_next
             self.level += 1
             log(f"{self.name} has leveled up! Level {self.level}", tag)
-            self.base_attack += 2
+            self.base_attack += 1
             self.attack = self.base_attack
+            self.base_armor += 1
+            self.armor = self.base_armor
+            self.base_speed += 1
+            self.speed = self.base_speed
             self.max_hp += 10
             self.hp = self.max_hp
             self.xp_to_next = self.xp_to_next + (self.level * 10)
