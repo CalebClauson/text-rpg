@@ -256,9 +256,9 @@ These updates helped the game feel more stable and made the UI behavior more con
 
 The project can be run normally in Python from the project folder.
 
+Packaged Windows:
+For the packaged Windows version, download the release ZIP, extract it, and run main.exe located in the dist folder.
+
 Basic run command for Linux:
 ```bash
 python main.py
-
-Packaged Windows:
-For the packaged Windows version, download the release ZIP, extract it, and run main.exe located in the dist folder.
